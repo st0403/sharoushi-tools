@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>社労士 数字暗記 単語帳</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: contain; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    background: #f5f3ee;
+    color: #2c2c2a;
+    line-height: 1.5;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    background: #f5f3ee;
+    z-index: 10;
+    padding: 12px 14px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .stats {
+    font-size: 11px;
+    color: #5f5e5a;
+    font-weight: 400;
+  }
+  .mode-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .mode-tab {
+    flex: 1;
+    padding: 8px 4px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+    text-align: center;
+  }
+  .mode-tab.active {
+    background: #2c2c2a;
+    color: white;
+    border-color: #2c2c2a;
+  }
+  .filter-bar {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 0 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 14px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .filter-chip.active {
+    background: #2c2c2a;
+    color: white;
+    border-color: #2c2c2a;
+  }
+  .filter-chip .count {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-left: 3px;
+  }
+
+  main { padding: 12px 14px; }
+
+  /* === 表モード === */
+  .table-container {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .topic-group {
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .topic-group:last-child { border-bottom: none; }
+  .topic-header {
+    padding: 8px 12px;
+    background: #f1efe8;
+    font-size: 12px;
+    font-weight: 500;
+    color: #444441;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .topic-header .topic-meta { font-size: 11px; color: #888780; font-weight: 400; }
+  .topic-toggle { font-size: 10px; color: #888780; }
+  .topic-group.collapsed .item-row { display: none; }
+  .item-row {
+    padding: 10px 12px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .item-row:first-of-type { border-top: none; }
+  .item-question { font-size: 13px; color: #2c2c2a; line-height: 1.5; }
+  .item-answer {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1d9e75;
+    text-align: right;
+    min-width: 70px;
+    white-space: nowrap;
+  }
+  .item-row.hidden .item-answer { color: transparent; background: #d3d1c7; border-radius: 4px; }
+  .item-row.hidden .item-answer:active { color: #1d9e75; background: transparent; }
+  .item-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .star-btn {
+    background: none;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #888780;
+    font-family: inherit;
+  }
+  .star-btn.starred { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
+
+  /* === カードモード === */
+  .card-area {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+  }
+  .card {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 28px 20px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: transform 0.15s;
+  }
+  .card:active { transform: scale(0.98); }
+  .card-topic {
+    font-size: 11px;
+    color: #888780;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .card-question {
+    font-size: 17px;
+    line-height: 1.6;
+    color: #2c2c2a;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .card-answer {
+    font-size: 28px;
+    font-weight: 500;
+    color: #1d9e75;
+    text-align: center;
+    padding: 16px 0;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    margin-top: 12px;
+    line-height: 1.4;
+  }
+  .card-hint {
+    text-align: center;
+    color: #888780;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  .card-nav {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .card-nav button {
+    flex: 1;
+    padding: 14px 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .card-nav button:active { background: #f1efe8; }
+  .card-nav button.primary { background: #2c2c2a; color: white; border-color: #2c2c2a; }
+  .card-nav .ng { background: #FCEBEB; color: #791F1F; border-color: #F09595; }
+  .card-nav .ok { background: #EAF3DE; color: #27500A; border-color: #97C459; }
+  .card-progress {
+    text-align: center;
+    color: #5f5e5a;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .card-star {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #d3d1c7;
+    padding: 4px;
+  }
+  .card-star.starred { color: #EF9F27; }
+
+  /* === クイズモード === */
+  .quiz-container { padding: 0; }
+  .quiz-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: #5f5e5a;
+  }
+  .quiz-bar {
+    height: 4px;
+    background: #e8e6df;
+    border-radius: 2px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .quiz-fill { height: 100%; background: #1d9e75; transition: width 0.3s; }
+  .quiz-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .quiz-question {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    color: #2c2c2a;
+  }
+  .quiz-topic { font-size: 11px; color: #888780; margin-bottom: 8px; }
+  .choice-btn {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+    margin-bottom: 8px;
+    text-align: left;
+    line-height: 1.4;
+  }
+  .choice-btn:active { background: #f1efe8; }
+  .choice-btn.correct { background: #EAF3DE; border-color: #97C459; color: #27500A; }
+  .choice-btn.wrong { background: #FCEBEB; border-color: #F09595; color: #791F1F; }
+  .choice-btn.disabled { pointer-events: none; }
+  .quiz-result {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .quiz-result-score {
+    font-size: 36px;
+    font-weight: 500;
+    color: #1d9e75;
+    margin: 12px 0;
+  }
+  .quiz-explain {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f1efe8;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #5f5e5a;
+    line-height: 1.6;
+  }
+  .next-btn {
+    width: 100%;
+    padding: 14px;
+    background: #2c2c2a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 12px;
+  }
+
+  /* 設定エリア */
+  .settings {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .settings label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+  .settings input[type="checkbox"] { accent-color: #1d9e75; cursor: pointer; }
+  .settings .count-badge {
+    background: #f1efe8;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #5f5e5a;
+  }
+  .settings button {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888780;
+    font-size: 14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a18; color: #e8e6df; }
+    header { background: #1a1a18; border-color: rgba(255,255,255,0.08); }
+    .mode-tab, .filter-chip, .topic-header, .item-row, .card, .quiz-card,
+    .choice-btn, .settings, .star-btn, .card-nav button, .table-container {
+      background: #2c2c2a; color: #e8e6df; border-color: rgba(255,255,255,0.1);
+    }
+    .topic-header { background: #3a3a37; color: #e8e6df; }
+    .item-question, .card-question, .quiz-question { color: #e8e6df; }
+    .item-row.hidden .item-answer { background: #5f5e5a; }
+    .stats, .card-topic, .quiz-topic, .card-hint, .card-progress,
+    .topic-meta, .quiz-progress, .topic-toggle, .star-btn { color: #b4b2a9; }
+    .card-nav button:active, .choice-btn:active { background: #3a3a37; }
+    .quiz-explain { background: #3a3a37; color: #b4b2a9; }
+    .star-btn.starred, .card-star.starred { background: #633806; color: #FAC775; border-color: #BA7517; }
+    .card-nav .ng { background: #501313; color: #F7C1C1; border-color: #A32D2D; }
+    .card-nav .ok { background: #173404; color: #C0DD97; border-color: #639922; }
+    .choice-btn.correct { background: #173404; border-color: #639922; color: #C0DD97; }
+    .choice-btn.wrong { background: #501313; border-color: #A32D2D; color: #F7C1C1; }
+    .mode-tab.active, .filter-chip.active { background: #e8e6df; color: #1a1a18; border-color: #e8e6df; }
+    .next-btn { background: #e8e6df; color: #1a1a18; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    <span>📔 社労士 数字暗記</span>
+    <span class="stats" id="globalStats"></span>
+  </h1>
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="modeTable" onclick="setMode('table')">表</button>
+    <button class="mode-tab" id="modeCard" onclick="setMode('card')">カード</button>
+    <button class="mode-tab" id="modeQuiz" onclick="setMode('quiz')">4択</button>
+  </div>
+  <div class="filter-bar" id="filterBar"></div>
+</header>
+
+<main id="main"></main>
+
+<script>
+// ============================================================
+// データ：社労士頻出数字（全科目カバー・約120項目）
+// 構造：{ subject, topic, q (問題), a (答え), unit (単位、4択生成用) }
+// ============================================================
+const ITEMS = [
+  // ===== 労働基準法 =====
+  { s: "労基", t: "賃金支払", q: "賃金は通貨で直接労働者に毎月___回以上、一定期日に支払わなければならない", a: "1", unit: "回" },
+  { s: "労基", t: "賃金支払", q: "賃金請求権の消滅時効は___年（当面の間）", a: "3", unit: "年" },
+  { s: "労基", t: "賃金支払", q: "退職手当の請求権の消滅時効は___年", a: "5", unit: "年" },
+  { s: "労基", t: "労働時間", q: "法定労働時間：1週___時間、1日___時間", a: "40・8", unit: "時間" },
+  { s: "労基", t: "労働時間", q: "時間外・休日労働協定届（36協定）の限度時間：1か月___時間、1年___時間", a: "45・360", unit: "時間" },
+  { s: "労基", t: "労働時間", q: "特別条項付き36協定の限度：1か月___時間未満（休日含む）、1年___時間以下", a: "100・720", unit: "時間" },
+  { s: "労基", t: "労働時間", q: "1年単位の変形労働時間制：1日___時間、1週___時間が上限", a: "10・52", unit: "時間" },
+  { s: "労基", t: "休憩・休日", q: "休憩時間：労働時間が6時間超で___分以上、8時間超で___分以上", a: "45・60", unit: "分" },
+  { s: "労基", t: "休憩・休日", q: "毎週少なくとも___回または4週間を通じて___回以上の休日", a: "1・4", unit: "回" },
+  { s: "労基", t: "割増賃金", q: "時間外労働の割増率：通常___%以上、月60時間超で___%以上", a: "25・50", unit: "%" },
+  { s: "労基", t: "割増賃金", q: "深夜労働（22時〜翌5時）の割増率：___%以上", a: "25", unit: "%" },
+  { s: "労基", t: "割増賃金", q: "休日労働の割増率：___%以上", a: "35", unit: "%" },
+  { s: "労基", t: "年次有給休暇", q: "雇入れから___か月継続勤務し全労働日の___割以上出勤で10日付与", a: "6・8", unit: "" },
+  { s: "労基", t: "年次有給休暇", q: "年休の最大付与日数（6.5年以上勤続）___日", a: "20", unit: "日" },
+  { s: "労基", t: "年次有給休暇", q: "年5日の年休取得義務：年___日以上付与される者が対象", a: "10", unit: "日" },
+  { s: "労基", t: "解雇", q: "解雇予告は少なくとも___日前、または___日分以上の平均賃金支払", a: "30・30", unit: "日" },
+  { s: "労基", t: "妊産婦", q: "産前休業：___週間（多胎妊娠は___週間）", a: "6・14", unit: "週" },
+  { s: "労基", t: "妊産婦", q: "産後休業：___週間（医師が認めれば___週間以降復職可）", a: "8・6", unit: "週" },
+  { s: "労基", t: "年少者", q: "満___歳に達した日以後の最初の3月31日までは原則使用禁止", a: "15", unit: "歳" },
+  { s: "労基", t: "賃金", q: "出来高払制の保障給：賃金総額の___割程度が望ましいとされる", a: "6", unit: "割" },
+
+  // ===== 安衛法 =====
+  { s: "安衛", t: "安全衛生管理体制", q: "総括安全衛生管理者の選任：常時___人以上の労働者を使用する事業場（建設業等）", a: "100", unit: "人" },
+  { s: "安衛", t: "安全衛生管理体制", q: "衛生管理者の選任：常時___人以上の労働者を使用する全業種の事業場", a: "50", unit: "人" },
+  { s: "安衛", t: "安全衛生管理体制", q: "産業医の選任：常時___人以上の労働者を使用する事業場", a: "50", unit: "人" },
+  { s: "安衛", t: "安全衛生管理体制", q: "産業医を専属で置く必要がある事業場：常時___人以上", a: "1000", unit: "人" },
+  { s: "安衛", t: "安全衛生管理体制", q: "安全委員会・衛生委員会の設置：常時___人以上の事業場", a: "50", unit: "人" },
+  { s: "安衛", t: "健康診断", q: "雇入時健康診断・定期健康診断は___年以内ごとに1回実施", a: "1", unit: "年" },
+  { s: "安衛", t: "健康診断", q: "特定業務従事者の健康診断は___か月以内ごとに1回", a: "6", unit: "月" },
+  { s: "安衛", t: "ストレスチェック", q: "ストレスチェック：常時___人以上の労働者を使用する事業者は実施義務", a: "50", unit: "人" },
+
+  // ===== 労災保険法 =====
+  { s: "労災", t: "休業給付", q: "休業補償給付：休業の___日目から、給付基礎日額の___%相当額", a: "4・60", unit: "" },
+  { s: "労災", t: "休業給付", q: "休業特別支給金：給付基礎日額の___%相当額", a: "20", unit: "%" },
+  { s: "労災", t: "傷病年金", q: "傷病補償年金は療養開始後___年___か月経過しても治らない場合に支給", a: "1・6", unit: "" },
+  { s: "労災", t: "障害給付", q: "障害補償年金は障害等級第___級から第___級", a: "1・7", unit: "級" },
+  { s: "労災", t: "障害給付", q: "障害補償一時金は障害等級第___級から第___級", a: "8・14", unit: "級" },
+  { s: "労災", t: "遺族給付", q: "遺族補償年金の最低保障：給付基礎日額の___日分", a: "153", unit: "日分" },
+  { s: "労災", t: "遺族給付", q: "遺族補償一時金（遺族なき場合）：給付基礎日額の___日分", a: "1000", unit: "日分" },
+  { s: "労災", t: "葬祭料", q: "葬祭料：315,000円＋給付基礎日額の___日分（または給付基礎日額の___日分のいずれか高い方）", a: "30・60", unit: "日分" },
+  { s: "労災", t: "時効", q: "労災保険給付の請求権の時効：療養・休業・葬祭料は___年、障害・遺族は___年", a: "2・5", unit: "年" },
+
+  // ===== 雇用保険法 =====
+  { s: "雇用", t: "被保険者", q: "雇用保険の適用要件：1週間の所定労働時間が___時間以上、___日以上の雇用見込み", a: "20・31", unit: "" },
+  { s: "雇用", t: "基本手当", q: "基本手当の所定給付日数（一般受給資格者）：被保険者期間___年未満は90日", a: "10", unit: "年" },
+  { s: "雇用", t: "基本手当", q: "基本手当の所定給付日数の最大日数（一般受給資格者）：___日", a: "150", unit: "日" },
+  { s: "雇用", t: "基本手当", q: "倒産・解雇等による特定受給資格者の最大所定給付日数：___日（45歳以上60歳未満）", a: "330", unit: "日" },
+  { s: "雇用", t: "基本手当", q: "基本手当の受給期間：原則離職日の翌日から___年", a: "1", unit: "年" },
+  { s: "雇用", t: "基本手当", q: "基本手当の給付率：賃金日額の___〜___%（年齢・賃金で変動）", a: "50・80", unit: "%" },
+  { s: "雇用", t: "基本手当", q: "受給資格：離職日以前___年間に通算___か月以上の被保険者期間", a: "2・12", unit: "" },
+  { s: "雇用", t: "基本手当", q: "特定受給資格者・特定理由離職者の受給資格：離職日以前___年間に通算___か月", a: "1・6", unit: "" },
+  { s: "雇用", t: "高年齢", q: "高年齢求職者給付金：被保険者期間1年未満で基本手当日額の___日分", a: "30", unit: "日分" },
+  { s: "雇用", t: "高年齢", q: "高年齢求職者給付金：被保険者期間1年以上で基本手当日額の___日分", a: "50", unit: "日分" },
+  { s: "雇用", t: "高年齢", q: "高年齢雇用継続基本給付金：60歳時点に比べ賃金が___%未満に低下した場合", a: "75", unit: "%" },
+  { s: "雇用", t: "育児休業", q: "育児休業給付金：休業開始から___日まで賃金の___%、それ以降___%", a: "180・67・50", unit: "" },
+  { s: "雇用", t: "教育訓練", q: "一般教育訓練給付金：受講費用の___%（上限10万円）", a: "20", unit: "%" },
+  { s: "雇用", t: "教育訓練", q: "専門実践教育訓練給付金：受講費用の最大___%（年間上限あり）", a: "70", unit: "%" },
+  { s: "雇用", t: "時効", q: "雇用保険給付の請求権の時効：___年", a: "2", unit: "年" },
+
+  // ===== 徴収法 =====
+  { s: "徴収", t: "保険料", q: "概算保険料の納付期限：保険年度の6月___日から7月___日まで", a: "1・10", unit: "日" },
+  { s: "徴収", t: "保険料", q: "概算保険料の延納（分割納付）が認められる金額：___万円以上", a: "40", unit: "万円" },
+  { s: "徴収", t: "メリット制", q: "継続事業のメリット制：労災保険率を最大___%増減", a: "40", unit: "%" },
+  { s: "徴収", t: "印紙保険料", q: "日雇労働被保険者の印紙保険料：第1〜3級級分（賃金日額により）", a: "3", unit: "級" },
+
+  // ===== 健康保険法 =====
+  { s: "健保", t: "被保険者", q: "適用事業所の強制適用：常時___人以上の従業員を使用する個人事業所", a: "5", unit: "人" },
+  { s: "健保", t: "被保険者", q: "短時間労働者の被保険者要件：従業員___人超の企業で週20時間以上等", a: "50", unit: "人" },
+  { s: "健保", t: "標準報酬", q: "標準報酬月額の等級：第___級から第___級", a: "1・50", unit: "級" },
+  { s: "健保", t: "標準報酬", q: "標準賞与額の年間累計上限：___万円", a: "573", unit: "万円" },
+  { s: "健保", t: "保険給付", q: "傷病手当金の支給期間：支給開始日から通算___年___か月", a: "1・6", unit: "" },
+  { s: "健保", t: "保険給付", q: "傷病手当金の支給額：標準報酬日額の___分の___", a: "3・2", unit: "" },
+  { s: "健保", t: "保険給付", q: "傷病手当金の待期期間：連続する___日間", a: "3", unit: "日" },
+  { s: "健保", t: "保険給付", q: "出産育児一時金：1児につき___万円（産科医療補償制度加算分含む）", a: "50", unit: "万円" },
+  { s: "健保", t: "保険給付", q: "出産手当金の支給期間：産前___日、産後___日", a: "42・56", unit: "日" },
+  { s: "健保", t: "保険給付", q: "埋葬料：___万円（定額）", a: "5", unit: "万円" },
+  { s: "健保", t: "保険給付", q: "高額療養費：自己負担限度額（70歳未満一般所得）の基本：___円", a: "80100", unit: "円" },
+  { s: "健保", t: "任意継続", q: "任意継続被保険者：資格喪失日の前日まで継続して___か月以上の被保険者期間", a: "2", unit: "月" },
+  { s: "健保", t: "任意継続", q: "任意継続被保険者の期間：最長___年間", a: "2", unit: "年" },
+  { s: "健保", t: "任意継続", q: "任意継続被保険者の申出期間：資格喪失日から___日以内", a: "20", unit: "日" },
+  { s: "健保", t: "時効", q: "保険給付を受ける権利の時効：___年", a: "2", unit: "年" },
+  { s: "健保", t: "保険料", q: "産前産後休業期間中の保険料免除：被保険者・事業主とも___", a: "免除", unit: "" },
+
+  // ===== 国民年金法 =====
+  { s: "国年", t: "被保険者", q: "第1号被保険者：___歳以上___歳未満で日本国内に住所を有する者", a: "20・60", unit: "歳" },
+  { s: "国年", t: "被保険者", q: "第2号被保険者：厚生年金の被保険者（年齢制限なし、ただし___歳以上は除く老齢給付受給者）", a: "65", unit: "歳" },
+  { s: "国年", t: "被保険者", q: "第3号被保険者：第2号被保険者の配偶者で___歳以上___歳未満", a: "20・60", unit: "歳" },
+  { s: "国年", t: "保険料", q: "国民年金保険料（令和6年度）：月額___円", a: "16980", unit: "円" },
+  { s: "国年", t: "保険料", q: "産前産後期間の保険料免除：出産予定日の前月から___か月間", a: "4", unit: "か月" },
+  { s: "国年", t: "保険料", q: "学生納付特例の対象：本人の前年所得___万円＋扶養親族控除額以下", a: "128", unit: "万円" },
+  { s: "国年", t: "老齢基礎年金", q: "老齢基礎年金の受給資格期間：___年", a: "10", unit: "年" },
+  { s: "国年", t: "老齢基礎年金", q: "老齢基礎年金の満額：保険料納付済期間が___月（40年）", a: "480", unit: "月" },
+  { s: "国年", t: "老齢基礎年金", q: "老齢基礎年金の支給開始：原則___歳", a: "65", unit: "歳" },
+  { s: "国年", t: "老齢基礎年金", q: "繰上げ受給：1か月あたり___%減額（月数×0.4%）", a: "0.4", unit: "%" },
+  { s: "国年", t: "老齢基礎年金", q: "繰下げ受給：1か月あたり___%増額（最大___%）", a: "0.7・84", unit: "%" },
+  { s: "国年", t: "障害基礎年金", q: "障害基礎年金は障害等級___級と___級", a: "1・2", unit: "級" },
+  { s: "国年", t: "障害基礎年金", q: "障害基礎年金（2級）の年金額：老齢基礎年金の満額と___（同額）", a: "同額", unit: "" },
+  { s: "国年", t: "障害基礎年金", q: "障害基礎年金（1級）の年金額：2級の___倍", a: "1.25", unit: "倍" },
+  { s: "国年", t: "障害基礎年金", q: "保険料納付要件：被保険者期間の___分の2以上の納付・免除", a: "3", unit: "" },
+  { s: "国年", t: "遺族基礎年金", q: "遺族基礎年金：子のある配偶者または子（子は___歳の年度末まで）", a: "18", unit: "歳" },
+  { s: "国年", t: "寡婦年金", q: "寡婦年金：第1号被保険者として保険料納付・免除期間___年以上の夫が死亡", a: "10", unit: "年" },
+  { s: "国年", t: "寡婦年金", q: "寡婦年金の支給期間：妻が___歳から___歳まで", a: "60・65", unit: "歳" },
+  { s: "国年", t: "死亡一時金", q: "死亡一時金：第1号被保険者として保険料納付月数___月以上", a: "36", unit: "月" },
+  { s: "国年", t: "付加年金", q: "付加保険料：月額___円、付加年金額：___円×付加保険料納付月数", a: "400・200", unit: "円" },
+  { s: "国年", t: "時効", q: "年金給付を受ける権利の時効：___年", a: "5", unit: "年" },
+
+  // ===== 厚生年金保険法 =====
+  { s: "厚年", t: "被保険者", q: "厚生年金被保険者の年齢上限：___歳未満（70歳以上は適用除外）", a: "70", unit: "歳" },
+  { s: "厚年", t: "標準報酬", q: "厚生年金の標準報酬月額の等級：第___級から第___級", a: "1・32", unit: "級" },
+  { s: "厚年", t: "標準報酬", q: "厚生年金の標準賞与額の上限：1か月あたり___万円", a: "150", unit: "万円" },
+  { s: "厚年", t: "保険料", q: "厚生年金保険料率：___%（労使折半）", a: "18.3", unit: "%" },
+  { s: "厚年", t: "老齢厚生年金", q: "老齢厚生年金の受給要件：被保険者期間___か月以上＋老齢基礎年金の受給資格期間", a: "1", unit: "月" },
+  { s: "厚年", t: "老齢厚生年金", q: "在職老齢年金：60歳以上の支給停止調整額（基本月額＋総報酬月額）___万円", a: "50", unit: "万円" },
+  { s: "厚年", t: "老齢厚生年金", q: "加給年金：被保険者期間___年以上、___歳未満の配偶者または子がいる場合", a: "20・65", unit: "" },
+  { s: "厚年", t: "障害厚生年金", q: "障害厚生年金は障害等級第___級から第___級", a: "1・3", unit: "級" },
+  { s: "厚年", t: "障害厚生年金", q: "障害手当金：障害等級___級に該当しない程度の障害（症状固定後の一時金）", a: "3", unit: "級" },
+  { s: "厚年", t: "遺族厚生年金", q: "遺族厚生年金：報酬比例部分の年金額の___分の3", a: "4", unit: "" },
+  { s: "厚年", t: "遺族厚生年金", q: "中高齢寡婦加算：___歳以上___歳未満の妻に加算", a: "40・65", unit: "歳" },
+  { s: "厚年", t: "脱退一時金", q: "脱退一時金：日本国籍を有しない者で被保険者期間___月以上", a: "6", unit: "月" },
+  { s: "厚年", t: "離婚分割", q: "合意分割の請求期限：離婚等の翌日から___年以内", a: "2", unit: "年" },
+  { s: "厚年", t: "離婚分割", q: "3号分割の対象期間：平成___年4月1日以後の3号被保険者期間", a: "20", unit: "年" },
+
+  // ===== 一般常識（社一） =====
+  { s: "社一", t: "国民健康保険", q: "国民健康保険の保険者：都道府県および___", a: "市町村", unit: "" },
+  { s: "社一", t: "国民健康保険", q: "国保の高額療養費：自己負担限度額の基本（70歳未満一般）___円", a: "80100", unit: "円" },
+  { s: "社一", t: "介護保険", q: "介護保険の被保険者：第1号被保険者は___歳以上、第2号被保険者は___歳以上___歳未満", a: "65・40・65", unit: "歳" },
+  { s: "社一", t: "介護保険", q: "介護保険の保険者：___（市町村および特別区）", a: "市町村", unit: "" },
+  { s: "社一", t: "介護保険", q: "要介護認定の更新：原則___か月（最長36か月）", a: "12", unit: "月" },
+  { s: "社一", t: "高齢者医療", q: "後期高齢者医療制度の対象者：___歳以上（一定の障害者は65歳以上）", a: "75", unit: "歳" },
+  { s: "社一", t: "高齢者医療", q: "後期高齢者医療の自己負担割合：原則___割（一定所得以上は2割または3割）", a: "1", unit: "割" },
+  { s: "社一", t: "確定拠出年金", q: "確定拠出年金（個人型iDeCo）の加入可能年齢：___歳未満", a: "65", unit: "歳" },
+  { s: "社一", t: "社労士法", q: "社会保険労務士登録：社労士試験合格＋___年以上の実務経験または事務指定講習修了", a: "2", unit: "年" },
+  { s: "社一", t: "児童手当", q: "児童手当の対象：___歳に達する日以後の最初の3月31日までの児童（高校生年代まで拡充）", a: "18", unit: "歳" },
+
+  // ===== 一般常識（労一） =====
+  { s: "労一", t: "労働組合法", q: "不当労働行為の救済申立期間：行為のあった日から___年以内", a: "1", unit: "年" },
+  { s: "労一", t: "最低賃金法", q: "最低賃金の減額の特例：使用者は都道府県労働局長の許可で最大___%減額可", a: "20", unit: "%" },
+  { s: "労一", t: "育児介護休業法", q: "育児休業：原則子が___歳に達するまで（保育所入所できない等で最長2歳）", a: "1", unit: "歳" },
+  { s: "労一", t: "育児介護休業法", q: "産後パパ育休（出生時育児休業）：子の出生後___週間以内に___週間まで", a: "8・4", unit: "週" },
+  { s: "労一", t: "育児介護休業法", q: "介護休業：対象家族1人につき通算___日まで（3回まで分割可）", a: "93", unit: "日" },
+  { s: "労一", t: "男女雇均法", q: "事業主にセクハラ・マタハラの雇用管理上の措置義務：___人以上の事業主", a: "1", unit: "人" },
+  { s: "労一", t: "パート労働法", q: "短時間・有期雇用労働者：通常の労働者との不合理な待遇差は禁止", a: "禁止", unit: "" },
+  { s: "労一", t: "労働者派遣法", q: "派遣可能期間：個人単位で同一組織単位___年、事業所単位___年", a: "3・3", unit: "年" },
+  { s: "労一", t: "労働契約法", q: "無期転換ルール：通算___年を超えて反復更新された有期労働契約", a: "5", unit: "年" },
+  { s: "労一", t: "高年齢者雇用", q: "高年齢者雇用確保措置：___歳までの雇用確保（定年廃止・引上げ・継続雇用）", a: "65", unit: "歳" },
+  { s: "労一", t: "高年齢者雇用", q: "高年齢者就業確保措置（努力義務）：___歳までの就業機会確保", a: "70", unit: "歳" },
+  { s: "労一", t: "障害者雇用", q: "民間企業の法定雇用率：___%（令和6年4月〜）", a: "2.5", unit: "%" },
+  { s: "労一", t: "障害者雇用", q: "障害者雇用納付金：法定雇用率未達成の場合、不足1人あたり月額___円", a: "50000", unit: "円" },
+
+  // ===== 横断系 =====
+  { s: "横断", t: "時効", q: "労働基準法の賃金請求権：___年（当面の間）", a: "3", unit: "年" },
+  { s: "横断", t: "時効", q: "労災保険給付（療養・休業・葬祭料）：___年", a: "2", unit: "年" },
+  { s: "横断", t: "時効", q: "労災保険給付（障害・遺族）：___年", a: "5", unit: "年" },
+  { s: "横断", t: "時効", q: "雇用保険給付：___年", a: "2", unit: "年" },
+  { s: "横断", t: "時効", q: "健康保険給付：___年", a: "2", unit: "年" },
+  { s: "横断", t: "時効", q: "国民年金・厚生年金の年金給付：___年", a: "5", unit: "年" },
+  { s: "横断", t: "不服申立", q: "労災・雇用：審査請求は処分を知った日の翌日から___か月以内", a: "3", unit: "月" },
+  { s: "横断", t: "不服申立", q: "健保・国年・厚年：審査請求は処分を知った日の翌日から___か月以内", a: "3", unit: "月" },
+  { s: "横断", t: "端数処理", q: "標準報酬月額の端数：原則___円未満切捨て、___円以上切上げ", a: "50・50", unit: "円" },
+  { s: "横断", t: "端数処理", q: "保険料率の端数：原則小数点以下___位を四捨五入", a: "3", unit: "位" }
+];
+
+// ============================================================
+// 状態管理
+// ============================================================
+const STORAGE = "sharoushi_flashcards_v1";
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return {
+    mode: "table",
+    filter: "all",
+    starred: {},        // {id: true}
+    tableHidden: false, // 表モードで答えを隠すか
+    cardIdx: 0,
+    cardShowAnswer: false,
+    cardOrder: null,    // null=順序通り、配列ならシャッフル順
+    correctCount: {},   // {id: 正解回数}
+    wrongCount: {}      // {id: 間違い回数}
+  };
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE, JSON.stringify(state)); } catch (e) {}
+}
+
+function getId(item, idx) { return item.s + "_" + idx; }
+
+ITEMS.forEach((item, idx) => { item.id = getId(item, idx); });
+
+// ============================================================
+// フィルター
+// ============================================================
+const SUBJECTS = ["all", "労基", "安衛", "労災", "雇用", "徴収", "健保", "国年", "厚年", "社一", "労一", "横断", "★"];
+
+function filteredItems() {
+  if (state.filter === "all") return ITEMS;
+  if (state.filter === "★") return ITEMS.filter(it => state.starred[it.id]);
+  return ITEMS.filter(it => it.s === state.filter);
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  if (mode === "card") { state.cardIdx = 0; state.cardShowAnswer = false; state.cardOrder = null; }
+  if (mode === "quiz") { initQuiz(); }
+  saveState();
+  render();
+}
+
+function setFilter(f) {
+  state.filter = f;
+  state.cardIdx = 0;
+  state.cardShowAnswer = false;
+  state.cardOrder = null;
+  if (state.mode === "quiz") initQuiz();
+  saveState();
+  render();
+}
+
+function toggleStar(id, ev) {
+  if (ev) ev.stopPropagation();
+  if (state.starred[id]) delete state.starred[id];
+  else state.starred[id] = true;
+  saveState();
+  render();
+}
+
+// ============================================================
+// 表モード
+// ============================================================
+function renderTable() {
+  const items = filteredItems();
+  if (items.length === 0) return `<div class="empty">該当する項目がありません</div>`;
+
+  const settingsHtml = `
+    <div class="settings">
+      <label><input type="checkbox" ${state.tableHidden ? "checked" : ""} onchange="toggleHidden()"> 答えを隠す</label>
+      <span class="count-badge">${items.length}項目</span>
+    </div>
+  `;
+
+  // 科目→トピックでグループ化
+  const groups = {};
+  items.forEach(it => {
+    const key = it.s + "::" + it.t;
+    if (!groups[key]) groups[key] = { s: it.s, t: it.t, items: [] };
+    groups[key].items.push(it);
+  });
+
+  const groupHtml = Object.values(groups).map(g => {
+    const itemsHtml = g.items.map(it => `
+      <div class="item-row ${state.tableHidden ? 'hidden' : ''}">
+        <div class="item-question">${escapeHtml(it.q)}</div>
+        <div class="item-answer">${escapeHtml(it.a)}${it.unit ? escapeHtml(it.unit) : ""}</div>
+        <div class="item-actions">
+          <button class="star-btn ${state.starred[it.id] ? 'starred' : ''}" onclick="toggleStar('${it.id}')">${state.starred[it.id] ? '★ 苦手' : '☆ 苦手登録'}</button>
+        </div>
+      </div>
+    `).join("");
+    return `
+      <div class="topic-group">
+        <div class="topic-header">
+          <span>${g.s} / ${g.t}</span>
+          <span class="topic-meta">${g.items.length}項目</span>
+        </div>
+        ${itemsHtml}
+      </div>
+    `;
+  }).join("");
+
+  return settingsHtml + `<div class="table-container">${groupHtml}</div>`;
+}
+
+function toggleHidden() {
+  state.tableHidden = !state.tableHidden;
+  saveState();
+  render();
+}
+
+// ============================================================
+// カードモード
+// ============================================================
+function getCardOrder() {
+  const items = filteredItems();
+  if (state.cardOrder && state.cardOrder.length === items.length) {
+    return state.cardOrder.map(i => items[i]).filter(Boolean);
+  }
+  return items;
+}
+
+function shuffleCards() {
+  const items = filteredItems();
+  const indices = items.map((_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  state.cardOrder = indices;
+  state.cardIdx = 0;
+  state.cardShowAnswer = false;
+  saveState();
+  render();
+}
+
+function renderCard() {
+  const items = getCardOrder();
+  if (items.length === 0) return `<div class="empty">該当する項目がありません</div>`;
+  if (state.cardIdx >= items.length) state.cardIdx = 0;
+
+  const it = items[state.cardIdx];
+  const settingsHtml = `
+    <div class="settings">
+      <button onclick="shuffleCards()">🔀 シャッフル</button>
+      <button onclick="resetOrder()">📑 順番通り</button>
+      <span class="count-badge">${items.length}項目</span>
+    </div>
+  `;
+
+  const cardHtml = `
+    <div class="card-area">
+      <div class="card-progress">${state.cardIdx + 1} / ${items.length}</div>
+      <div class="card" onclick="flipCard()">
+        <button class="card-star ${state.starred[it.id] ? 'starred' : ''}" onclick="toggleStar('${it.id}', event)">${state.starred[it.id] ? '★' : '☆'}</button>
+        <div class="card-topic">${it.s} ／ ${it.t}</div>
+        <div class="card-question">${escapeHtml(it.q)}</div>
+        ${state.cardShowAnswer
+          ? `<div class="card-answer">${escapeHtml(it.a)}${it.unit ? escapeHtml(it.unit) : ""}</div>`
+          : `<div class="card-hint">タップで答えを表示</div>`}
+      </div>
+      <div class="card-nav">
+        ${state.cardShowAnswer
+          ? `<button class="ng" onclick="markCard(false)">✗ 苦手</button>
+             <button class="ok" onclick="markCard(true)">✓ OK</button>`
+          : `<button onclick="prevCard()">← 前</button>
+             <button class="primary" onclick="flipCard()">答えを見る</button>
+             <button onclick="nextCard()">次 →</button>`
+        }
+      </div>
+    </div>
+  `;
+  return settingsHtml + cardHtml;
+}
+
+function flipCard() {
+  state.cardShowAnswer = !state.cardShowAnswer;
+  saveState();
+  render();
+}
+function nextCard() {
+  const items = getCardOrder();
+  state.cardIdx = (state.cardIdx + 1) % items.length;
+  state.cardShowAnswer = false;
+  saveState();
+  render();
+}
+function prevCard() {
+  const items = getCardOrder();
+  state.cardIdx = (state.cardIdx - 1 + items.length) % items.length;
+  state.cardShowAnswer = false;
+  saveState();
+  render();
+}
+function markCard(correct) {
+  const items = getCardOrder();
+  const it = items[state.cardIdx];
+  if (correct) {
+    state.correctCount[it.id] = (state.correctCount[it.id] || 0) + 1;
+  } else {
+    state.wrongCount[it.id] = (state.wrongCount[it.id] || 0) + 1;
+    state.starred[it.id] = true; // 間違えたら自動で苦手登録
+  }
+  saveState();
+  nextCard();
+}
+function resetOrder() {
+  state.cardOrder = null;
+  state.cardIdx = 0;
+  state.cardShowAnswer = false;
+  saveState();
+  render();
+}
+
+// ============================================================
+// クイズモード（4択）
+// ============================================================
+let quiz = { items: [], idx: 0, score: 0, answered: false, choices: [], correctChoice: 0 };
+
+function initQuiz() {
+  const items = filteredItems();
+  // シャッフルして10問抽出（少ない場合はその数）
+  const shuffled = [...items].sort(() => Math.random() - 0.5);
+  quiz.items = shuffled.slice(0, Math.min(10, shuffled.length));
+  quiz.idx = 0;
+  quiz.score = 0;
+  quiz.answered = false;
+  if (quiz.items.length > 0) generateChoices();
+}
+
+function generateChoices() {
+  const it = quiz.items[quiz.idx];
+  const correct = it.a;
+
+  // 同じトピックから他の答えを集める→なければ全体から
+  const samePool = ITEMS.filter(x => x.t === it.t && x.a !== correct).map(x => x.a);
+  const allPool = ITEMS.filter(x => x.a !== correct).map(x => x.a);
+  const pool = samePool.length >= 3 ? samePool : allPool;
+
+  // 重複除去してシャッフル、3つ取得
+  const unique = [...new Set(pool)].sort(() => Math.random() - 0.5).slice(0, 3);
+  const allChoices = [correct, ...unique].sort(() => Math.random() - 0.5);
+  quiz.choices = allChoices;
+  quiz.correctChoice = allChoices.indexOf(correct);
+  quiz.answered = false;
+}
+
+function answerQuiz(choiceIdx) {
+  if (quiz.answered) return;
+  quiz.answered = true;
+  const it = quiz.items[quiz.idx];
+  if (choiceIdx === quiz.correctChoice) {
+    quiz.score++;
+    state.correctCount[it.id] = (state.correctCount[it.id] || 0) + 1;
+  } else {
+    state.wrongCount[it.id] = (state.wrongCount[it.id] || 0) + 1;
+    state.starred[it.id] = true;
+  }
+  saveState();
+  render();
+}
+
+function nextQuiz() {
+  if (quiz.idx + 1 >= quiz.items.length) {
+    // 終了画面
+    quiz.idx = quiz.items.length;
+    render();
+    return;
+  }
+  quiz.idx++;
+  generateChoices();
+  render();
+}
+
+function restartQuiz() {
+  initQuiz();
+  render();
+}
+
+function renderQuiz() {
+  if (quiz.items.length === 0) {
+    return `<div class="empty">フィルター対象の項目がありません</div>`;
+  }
+
+  if (quiz.idx >= quiz.items.length) {
+    // 結果画面
+    const pct = Math.round((quiz.score / quiz.items.length) * 100);
+    return `
+      <div class="quiz-container">
+        <div class="quiz-result">
+          <div>クイズ終了！</div>
+          <div class="quiz-result-score">${quiz.score} / ${quiz.items.length}</div>
+          <div style="color: #5f5e5a; font-size: 13px;">正答率 ${pct}%</div>
+        </div>
+        <button class="next-btn" onclick="restartQuiz()">もう一度</button>
+        <button class="next-btn" onclick="setMode('table')" style="background: white; color: #2c2c2a; border: 1px solid rgba(0,0,0,0.1); margin-top: 8px;">表モードに戻る</button>
+      </div>
+    `;
+  }
+
+  const it = quiz.items[quiz.idx];
+  const pct = Math.round((quiz.idx / quiz.items.length) * 100);
+
+  const choicesHtml = quiz.choices.map((c, i) => {
+    let cls = "choice-btn";
+    if (quiz.answered) {
+      cls += " disabled";
+      if (i === quiz.correctChoice) cls += " correct";
+      else cls += " wrong";
+    }
+    return `<button class="${cls}" onclick="answerQuiz(${i})">${escapeHtml(c)}${it.unit ? escapeHtml(it.unit) : ""}</button>`;
+  }).join("");
+
+  const explainHtml = quiz.answered ? `
+    <div class="quiz-explain">
+      正解：<strong>${escapeHtml(it.a)}${it.unit ? escapeHtml(it.unit) : ""}</strong><br>
+      ${escapeHtml(it.s)} ／ ${escapeHtml(it.t)}
+    </div>
+    <button class="next-btn" onclick="nextQuiz()">${quiz.idx + 1 >= quiz.items.length ? '結果を見る' : '次の問題 →'}</button>
+  ` : "";
+
+  return `
+    <div class="quiz-container">
+      <div class="quiz-progress">
+        <span>${quiz.idx + 1} / ${quiz.items.length}問</span>
+        <span>正解 ${quiz.score}</span>
+      </div>
+      <div class="quiz-bar"><div class="quiz-fill" style="width: ${pct}%"></div></div>
+      <div class="quiz-card">
+        <div class="quiz-topic">${escapeHtml(it.s)} ／ ${escapeHtml(it.t)}</div>
+        <div class="quiz-question">${escapeHtml(it.q)}</div>
+        ${choicesHtml}
+        ${explainHtml}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// レンダリング
+// ============================================================
+function render() {
+  // モードタブ
+  document.querySelectorAll(".mode-tab").forEach(b => b.classList.remove("active"));
+  document.getElementById("mode" + state.mode[0].toUpperCase() + state.mode.slice(1)).classList.add("active");
+
+  // フィルターチップ
+  const counts = {};
+  ITEMS.forEach(it => { counts[it.s] = (counts[it.s] || 0) + 1; });
+  counts["all"] = ITEMS.length;
+  counts["★"] = Object.keys(state.starred).length;
+
+  const labels = { "all": "全部", "★": "★苦手" };
+  const fb = document.getElementById("filterBar");
+  fb.innerHTML = SUBJECTS.map(s => `
+    <button class="filter-chip ${state.filter === s ? 'active' : ''}" onclick="setFilter('${s}')">
+      ${labels[s] || s}<span class="count">${counts[s] || 0}</span>
+    </button>
+  `).join("");
+
+  // 全体stats
+  const starred = Object.keys(state.starred).length;
+  const correct = Object.values(state.correctCount).reduce((a, b) => a + b, 0);
+  const wrong = Object.values(state.wrongCount).reduce((a, b) => a + b, 0);
+  document.getElementById("globalStats").textContent = `★${starred} ✓${correct} ✗${wrong}`;
+
+  // メイン
+  const main = document.getElementById("main");
+  if (state.mode === "table") main.innerHTML = renderTable();
+  else if (state.mode === "card") main.innerHTML = renderCard();
+  else main.innerHTML = renderQuiz();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// 初回クイズ初期化
+if (state.mode === "quiz") initQuiz();
+render();
+
+// スワイプでカードめくり（カードモードのみ）
+let touchStartX = 0;
+document.addEventListener("touchstart", e => {
+  if (state.mode === "card") touchStartX = e.touches[0].clientX;
+}, { passive: true });
+document.addEventListener("touchend", e => {
+  if (state.mode !== "card") return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 60) {
+    if (dx > 0) prevCard();
+    else nextCard();
+  }
+}, { passive: true });
+</script>
+
+</body>
+</html>

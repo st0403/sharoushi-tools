@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社労士試験2026 日次タスク管理</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    background: #f5f3ee;
+    color: #2c2c2a;
+    line-height: 1.6;
+    padding: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  header {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .meta {
+    font-size: 13px;
+    color: #5f5e5a;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .progress-overview {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+  }
+  .progress-bar {
+    height: 8px;
+    background: #e8e6df;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #1d9e75;
+    transition: width 0.3s;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: #5f5e5a;
+    margin-top: 4px;
+  }
+  .controls {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .controls button {
+    padding: 6px 14px;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: white;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .controls button:hover {
+    background: #f1efe8;
+  }
+  .controls button.active {
+    background: #2c2c2a;
+    color: white;
+    border-color: #2c2c2a;
+  }
+  .controls .spacer { flex: 1; }
+  .controls .danger {
+    color: #a32d2d;
+    border-color: #f0999a;
+  }
+  .phase {
+    margin-bottom: 24px;
+  }
+  .phase-header {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .phase-1 { background: #FAECE7; color: #4A1B0C; }
+  .phase-2 { background: #FAEEDA; color: #412402; }
+  .phase-3 { background: #EEEDFE; color: #26215C; }
+  .phase-4 { background: #E1F5EE; color: #04342C; }
+  .phase-progress {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .day {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 6px;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: all 0.2s;
+  }
+  .day.today {
+    border: 2px solid #1d9e75;
+    background: #f4faf7;
+  }
+  .day.done {
+    opacity: 0.55;
+    background: #f1efe8;
+  }
+  .day.past:not(.done) {
+    border-left: 3px solid #d85a30;
+  }
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .day-date {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2c2c2a;
+    min-width: 80px;
+  }
+  .day-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f1efe8;
+    color: #5f5e5a;
+  }
+  .day-tag.today-tag { background: #1d9e75; color: white; }
+  .day-tag.weekend { background: #FAC775; color: #412402; }
+  .day-tag.holiday { background: #F0999B; color: #501313; }
+  .day-tag.exam { background: #D85A30; color: white; font-weight: 500; }
+  .day-tag.rest { background: #B5D4F4; color: #042C53; }
+  .day-summary {
+    font-size: 13px;
+    color: #2c2c2a;
+    flex: 1;
+    min-width: 200px;
+  }
+  .day-tasks {
+    margin-top: 6px;
+    padding-left: 90px;
+  }
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .task input[type="checkbox"] {
+    margin-top: 3px;
+    cursor: pointer;
+    accent-color: #1d9e75;
+    flex-shrink: 0;
+  }
+  .task.checked label {
+    text-decoration: line-through;
+    color: #888780;
+  }
+  .task label {
+    flex: 1;
+    cursor: pointer;
+    color: #2c2c2a;
+    line-height: 1.5;
+  }
+  .task .task-cat {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-right: 6px;
+    background: #e8e6df;
+    color: #5f5e5a;
+    vertical-align: 1px;
+  }
+  .task .task-cat.video { background: #CECBF6; color: #26215C; }
+  .task .task-cat.problem { background: #9FE1CB; color: #04342C; }
+  .task .task-cat.review { background: #FAC775; color: #412402; }
+  .task .task-cat.note { background: #F4C0D1; color: #4B1528; }
+  .task .task-cat.exam { background: #F5C4B3; color: #4A1B0C; }
+  .day-toggle {
+    cursor: pointer;
+    color: #5f5e5a;
+    font-size: 12px;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    font-family: inherit;
+  }
+  .collapsed .day-tasks { display: none; }
+  .filter-btn {
+    font-size: 12px;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888780;
+    font-size: 14px;
+  }
+  @media (max-width: 600px) {
+    .day-tasks { padding-left: 0; margin-top: 8px; }
+    .day-date { min-width: auto; }
+    .controls { padding: 10px; }
+    .controls button { font-size: 12px; padding: 5px 10px; }
+    h1 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>社労士試験2026 日次タスク管理</h1>
+  <div class="meta">
+    <span>📅 2026/5/1 〜 2026/8/23</span>
+    <span>📚 スタディング フルコース</span>
+    <span id="daysLeft"></span>
+  </div>
+  <div class="progress-overview">
+    <div class="progress-text" id="overallText">全体進捗：0 / 0 タスク完了</div>
+    <div class="progress-bar"><div class="progress-fill" id="overallBar" style="width: 0%"></div></div>
+  </div>
+</header>
+
+<div class="controls">
+  <button id="filterAll" class="active filter-btn" onclick="setFilter('all')">すべて</button>
+  <button id="filterToday" class="filter-btn" onclick="setFilter('today')">今日</button>
+  <button id="filterWeek" class="filter-btn" onclick="setFilter('week')">今週</button>
+  <button id="filterUndone" class="filter-btn" onclick="setFilter('undone')">未完了のみ</button>
+  <div class="spacer"></div>
+  <button onclick="expandAll()">全展開</button>
+  <button onclick="collapseAll()">全折畳</button>
+  <button class="danger" onclick="resetAll()">リセット</button>
+</div>
+
+<div id="schedule"></div>
+
+<script>
+// ============================================================
+// データ：日次タスク（5/1金〜8/23日）
+// 平日：1.5h想定／土日祝：3〜4h想定
+// ============================================================
+const schedule = [
+  // ===== フェーズ1：5月（社会保険科目の再構築） =====
+  { phase: 1, date: "2026-05-01", weekday: "金", summary: "GW初日：健保スタート", tasks: [
+    { cat: "video", text: "スタディング 健保レクチャー 1〜3本（総則・目的・保険者）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集を解く" },
+    { cat: "note", text: "数字暗記ノート開始（A5ノート1冊用意）" }
+  ]},
+  { phase: 1, date: "2026-05-02", weekday: "土", summary: "健保 被保険者・標準報酬", tasks: [
+    { cat: "video", text: "健保レクチャー 4〜8本（被保険者・標準報酬月額）" },
+    { cat: "problem", text: "1〜8本分のスマート問題集を再演習" },
+    { cat: "note", text: "標準報酬月額の等級表（1〜50等級）をノートに転記" }
+  ]},
+  { phase: 1, date: "2026-05-03", weekday: "日", summary: "健保 保険料・任意継続", tasks: [
+    { cat: "video", text: "健保レクチャー 9〜13本（保険料・任意継続被保険者）" },
+    { cat: "problem", text: "9〜13本分のスマート問題集" },
+    { cat: "review", text: "1〜13本範囲の総復習（弱点に付箋）" }
+  ]},
+  { phase: 1, date: "2026-05-04", weekday: "月・祝", summary: "健保前半総復習＋AI問題復習", tasks: [
+    { cat: "review", text: "1〜13本のスマート問題集を再度全問演習" },
+    { cat: "problem", text: "AI問題復習を30分まわす" },
+    { cat: "note", text: "数字ノートに被保険者要件をまとめる" }
+  ]},
+  { phase: 1, date: "2026-05-05", weekday: "火・祝", summary: "健保後半スタート", tasks: [
+    { cat: "video", text: "健保レクチャー 14〜17本（療養の給付・高額療養費）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-06", weekday: "水・祝", summary: "健保 傷病手当金・出産育児", tasks: [
+    { cat: "video", text: "健保レクチャー 18〜21本（傷病手当金・出産育児一時金）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "note", text: "給付の支給期間・金額をノート化" }
+  ]},
+  { phase: 1, date: "2026-05-07", weekday: "木", summary: "健保 埋葬料・家族給付", tasks: [
+    { cat: "video", text: "健保レクチャー 22〜23本（埋葬料・家族療養費）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-08", weekday: "金", summary: "健保 不服申立・最終回", tasks: [
+    { cat: "video", text: "健保レクチャー 24〜25本（不服申立・雑則）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-09", weekday: "土", summary: "健保 後半総復習", tasks: [
+    { cat: "review", text: "健保レクチャー14〜25本の総復習（必要に応じて再視聴）" },
+    { cat: "problem", text: "健保スマート問題集を全範囲1周" },
+    { cat: "note", text: "数字ノートに給付額・期間を整理" }
+  ]},
+  { phase: 1, date: "2026-05-10", weekday: "日", summary: "健保 弱点潰し＋AI問題復習", tasks: [
+    { cat: "problem", text: "AI問題復習を1時間まわす" },
+    { cat: "review", text: "間違えた問題の条文確認・弱点付箋整理" },
+    { cat: "note", text: "数字ノート音読5分" }
+  ]},
+  { phase: 1, date: "2026-05-11", weekday: "月", summary: "国年スタート", tasks: [
+    { cat: "video", text: "国年レクチャー 1〜3本（目的・被保険者種別）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-12", weekday: "火", summary: "国年 被保険者", tasks: [
+    { cat: "video", text: "国年レクチャー 4〜6本（任意加入・適用除外）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-13", weekday: "水", summary: "国年 保険料", tasks: [
+    { cat: "video", text: "国年レクチャー 7〜9本（保険料・免除制度）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-14", weekday: "木", summary: "国年 老齢基礎年金", tasks: [
+    { cat: "video", text: "国年レクチャー 10〜12本（老齢基礎年金）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-15", weekday: "金", summary: "国年 障害基礎年金", tasks: [
+    { cat: "video", text: "国年レクチャー 13本（障害基礎年金）" },
+    { cat: "review", text: "前日までの国年範囲を再演習" }
+  ]},
+  { phase: 1, date: "2026-05-16", weekday: "土", summary: "国年 遺族基礎年金・寡婦年金", tasks: [
+    { cat: "video", text: "国年レクチャー 14〜18本（遺族基礎年金・寡婦年金・死亡一時金）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "note", text: "国年3給付の支給要件をノート化" }
+  ]},
+  { phase: 1, date: "2026-05-17", weekday: "日", summary: "国年 第1号独自給付・年金額", tasks: [
+    { cat: "video", text: "国年レクチャー 19〜22本（年金額の改定・付加年金）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "review", text: "国年全体の弱点潰し" }
+  ]},
+  { phase: 1, date: "2026-05-18", weekday: "月", summary: "国年 不服申立・最終回", tasks: [
+    { cat: "video", text: "国年レクチャー 23〜25本（不服申立・雑則）" },
+    { cat: "problem", text: "国年スマート問題集を全範囲1周" }
+  ]},
+  { phase: 1, date: "2026-05-19", weekday: "火", summary: "厚年スタート", tasks: [
+    { cat: "video", text: "厚年レクチャー 1〜3本（目的・適用事業所・被保険者）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-20", weekday: "水", summary: "厚年 標準報酬", tasks: [
+    { cat: "video", text: "厚年レクチャー 4〜6本（標準報酬・標準賞与）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "note", text: "健保と厚年の標準報酬を対比してノート化" }
+  ]},
+  { phase: 1, date: "2026-05-21", weekday: "木", summary: "厚年 保険料・国庫負担", tasks: [
+    { cat: "video", text: "厚年レクチャー 7〜8本（保険料率・国庫負担）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-22", weekday: "金", summary: "厚年 老齢厚生年金 前半", tasks: [
+    { cat: "video", text: "厚年レクチャー 9〜10本（老齢厚生年金の支給要件）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-23", weekday: "土", summary: "厚年 老齢厚生年金 後半", tasks: [
+    { cat: "video", text: "厚年レクチャー 11〜14本（年金額計算・在職老齢年金・繰上繰下）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "note", text: "老齢厚生年金の計算式・乗率をノート化（最重要）" }
+  ]},
+  { phase: 1, date: "2026-05-24", weekday: "日", summary: "厚年 加給年金・振替加算", tasks: [
+    { cat: "video", text: "厚年レクチャー 15〜17本（加給年金・振替加算・特別支給）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "review", text: "AI問題復習を1時間まわす" }
+  ]},
+  { phase: 1, date: "2026-05-25", weekday: "月", summary: "厚年 障害厚生年金", tasks: [
+    { cat: "video", text: "厚年レクチャー 18〜19本（障害厚生年金・障害手当金）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-26", weekday: "火", summary: "厚年 遺族厚生年金", tasks: [
+    { cat: "video", text: "厚年レクチャー 20〜21本（遺族厚生年金・中高齢寡婦加算）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-27", weekday: "水", summary: "厚年 離婚分割・短期", tasks: [
+    { cat: "video", text: "厚年レクチャー 22〜23本（離婚時分割・3号分割・脱退一時金）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 1, date: "2026-05-28", weekday: "木", summary: "厚年 不服申立・最終回", tasks: [
+    { cat: "video", text: "厚年レクチャー 24〜25本（不服申立・雑則）" },
+    { cat: "problem", text: "厚年スマート問題集を全範囲1周" }
+  ]},
+  { phase: 1, date: "2026-05-29", weekday: "金", summary: "厚年 弱点潰し", tasks: [
+    { cat: "review", text: "厚年で間違えた問題を全部やり直し" },
+    { cat: "note", text: "年金計算式の暗記（音読10分）" }
+  ]},
+  { phase: 1, date: "2026-05-30", weekday: "土", summary: "3科目（健保・国年・厚年）横断復習", tasks: [
+    { cat: "review", text: "3科目の数字を横断ノートにまとめる（保険料率・支給要件年齢など）" },
+    { cat: "problem", text: "AI問題復習を2時間まわす" }
+  ]},
+  { phase: 1, date: "2026-05-31", weekday: "日", summary: "5月総決算：自作ミニテスト", tasks: [
+    { cat: "exam", text: "セレクト過去問から健保・国年・厚年を各10問抽出して解く" },
+    { cat: "review", text: "正答率を記録（目標：各6割以上）" },
+    { cat: "note", text: "6月の予定を見て一般常識対策本を発注" }
+  ]},
+
+  // ===== フェーズ2：6月（労働科目復元＋過去問着手） =====
+  { phase: 2, date: "2026-06-01", weekday: "月", summary: "労基スタート（1.75倍速）", tasks: [
+    { cat: "video", text: "労基レクチャー 1〜5本（総則・労働契約）／1.75倍速" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-02", weekday: "火", summary: "労基 賃金・労働時間", tasks: [
+    { cat: "video", text: "労基レクチャー 6〜10本（賃金・労働時間）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-03", weekday: "水", summary: "労基 休日・休暇・年少者", tasks: [
+    { cat: "video", text: "労基レクチャー 11〜15本（休日・休暇・年少者・妊産婦）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-04", weekday: "木", summary: "労基 就業規則・監督", tasks: [
+    { cat: "video", text: "労基レクチャー 16〜20本（就業規則・労働契約解除・監督）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-05", weekday: "金", summary: "労基 最終回＋雑則", tasks: [
+    { cat: "video", text: "労基レクチャー 21〜25本（雑則・罰則）" },
+    { cat: "problem", text: "労基スマート問題集を全範囲1周" }
+  ]},
+  { phase: 2, date: "2026-06-06", weekday: "土", summary: "安衛法 一気通貫", tasks: [
+    { cat: "video", text: "安衛レクチャー 1〜8本を全部視聴（1.75倍速）" },
+    { cat: "problem", text: "安衛スマート問題集を全範囲1周" },
+    { cat: "note", text: "安全衛生管理体制の数字をノート化（事業場規模ごと）" }
+  ]},
+  { phase: 2, date: "2026-06-07", weekday: "日", summary: "労基・安衛の総復習", tasks: [
+    { cat: "review", text: "労基・安衛のセレクト過去問を解く（直近3年）" },
+    { cat: "problem", text: "AI問題復習を1時間" },
+    { cat: "note", text: "一般常識対策本が届いたら目次に目を通す" }
+  ]},
+  { phase: 2, date: "2026-06-08", weekday: "月", summary: "労災スタート", tasks: [
+    { cat: "video", text: "労災レクチャー 1〜5本（目的・適用・業務災害）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-09", weekday: "火", summary: "労災 通勤災害・給付", tasks: [
+    { cat: "video", text: "労災レクチャー 6〜10本（通勤災害・療養補償・休業補償）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-10", weekday: "水", summary: "労災 障害・遺族給付", tasks: [
+    { cat: "video", text: "労災レクチャー 11〜15本（障害補償・遺族補償）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-11", weekday: "木", summary: "労災 特別支給金・社会復帰", tasks: [
+    { cat: "video", text: "労災レクチャー 16〜20本（特別支給金・社会復帰促進事業）" },
+    { cat: "problem", text: "労災スマート問題集を全範囲1周" }
+  ]},
+  { phase: 2, date: "2026-06-12", weekday: "金", summary: "雇用保険スタート", tasks: [
+    { cat: "video", text: "雇用レクチャー 1〜5本（目的・被保険者・適用）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-13", weekday: "土", summary: "雇用 求職者給付", tasks: [
+    { cat: "video", text: "雇用レクチャー 6〜13本（基本手当・所定給付日数）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "note", text: "所定給付日数の表をノート化（最重要）" }
+  ]},
+  { phase: 2, date: "2026-06-14", weekday: "日", summary: "雇用 就職促進・教育訓練・高年齢", tasks: [
+    { cat: "video", text: "雇用レクチャー 14〜20本（就職促進給付・教育訓練給付・高年齢雇用継続）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-15", weekday: "月", summary: "雇用 育児・介護・最終回", tasks: [
+    { cat: "video", text: "雇用レクチャー 21〜25本（育児休業給付・介護休業給付）" },
+    { cat: "problem", text: "雇用スマート問題集を全範囲1周" }
+  ]},
+  { phase: 2, date: "2026-06-16", weekday: "火", summary: "徴収法スタート", tasks: [
+    { cat: "video", text: "徴収レクチャー 1〜5本（目的・労働保険関係成立・概算保険料）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" }
+  ]},
+  { phase: 2, date: "2026-06-17", weekday: "水", summary: "徴収 確定保険料・メリット制", tasks: [
+    { cat: "video", text: "徴収レクチャー 6〜10本（確定保険料・メリット制・印紙保険料）" },
+    { cat: "problem", text: "徴収スマート問題集を全範囲1周" }
+  ]},
+  { phase: 2, date: "2026-06-18", weekday: "木", summary: "労働科目 過去問演習①", tasks: [
+    { cat: "exam", text: "セレクト過去問：労基（直近5年）" },
+    { cat: "review", text: "間違えた問題は条文に戻る" }
+  ]},
+  { phase: 2, date: "2026-06-19", weekday: "金", summary: "労働科目 過去問演習②", tasks: [
+    { cat: "exam", text: "セレクト過去問：安衛＋労災（直近5年）" },
+    { cat: "review", text: "弱点付箋を貼る" }
+  ]},
+  { phase: 2, date: "2026-06-20", weekday: "土", summary: "労働科目 過去問演習③", tasks: [
+    { cat: "exam", text: "セレクト過去問：雇用＋徴収（直近5年）" },
+    { cat: "review", text: "弱点科目の動画を再視聴" }
+  ]},
+  { phase: 2, date: "2026-06-21", weekday: "日", summary: "労働科目 弱点総復習", tasks: [
+    { cat: "review", text: "労基〜徴収の弱点付箋を全部やり直し" },
+    { cat: "problem", text: "AI問題復習を2時間" }
+  ]},
+  { phase: 2, date: "2026-06-22", weekday: "月", summary: "社保 過去問演習①", tasks: [
+    { cat: "exam", text: "セレクト過去問：健保（直近5年）" },
+    { cat: "review", text: "5月のテキストに戻って確認" }
+  ]},
+  { phase: 2, date: "2026-06-23", weekday: "火", summary: "社保 過去問演習②", tasks: [
+    { cat: "exam", text: "セレクト過去問：国年（直近5年）" },
+    { cat: "review", text: "弱点付箋を貼る" }
+  ]},
+  { phase: 2, date: "2026-06-24", weekday: "水", summary: "社保 過去問演習③", tasks: [
+    { cat: "exam", text: "セレクト過去問：厚年（直近5年）" },
+    { cat: "review", text: "弱点付箋を貼る" }
+  ]},
+  { phase: 2, date: "2026-06-25", weekday: "木", summary: "社保 弱点復習", tasks: [
+    { cat: "review", text: "健保・国年・厚年の弱点付箋を全部やり直し" },
+    { cat: "note", text: "数字ノートに新規論点を追加" }
+  ]},
+  { phase: 2, date: "2026-06-26", weekday: "金", summary: "労働科目の選択式練習", tasks: [
+    { cat: "exam", text: "選択式：労基・安衛・労災・雇用を各3問" },
+    { cat: "review", text: "条文の言い回しに慣れる" }
+  ]},
+  { phase: 2, date: "2026-06-27", weekday: "土", summary: "社保の選択式練習", tasks: [
+    { cat: "exam", text: "選択式：健保・国年・厚年を各3問" },
+    { cat: "review", text: "数字を空欄にした問題に慣れる" }
+  ]},
+  { phase: 2, date: "2026-06-28", weekday: "日", summary: "6月総決算", tasks: [
+    { cat: "exam", text: "セレクト過去問から労働＋社保で各5問抽出して択一テスト" },
+    { cat: "review", text: "正答率を記録（目標：労働7割／社保6割）" },
+    { cat: "rest", text: "進捗確認：遅れていれば6/29-30で取り戻す" }
+  ]},
+  { phase: 2, date: "2026-06-29", weekday: "月", summary: "予備日／補強", tasks: [
+    { cat: "review", text: "遅れている範囲を取り戻す or 一般常識本の社一を先取り" }
+  ]},
+  { phase: 2, date: "2026-06-30", weekday: "火", summary: "予備日／補強", tasks: [
+    { cat: "review", text: "遅れている範囲を取り戻す or 弱点科目の追加演習" }
+  ]},
+
+  // ===== フェーズ3：7月（一般常識・横断・選択式） =====
+  { phase: 3, date: "2026-07-01", weekday: "水", summary: "社一スタート", tasks: [
+    { cat: "video", text: "スタディング 社一レクチャー 1〜3本（健保組合・国保）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "exam", text: "選択式練習10問（毎日継続スタート）" }
+  ]},
+  { phase: 3, date: "2026-07-02", weekday: "木", summary: "社一 介護保険", tasks: [
+    { cat: "video", text: "社一レクチャー 4〜6本（介護保険・高齢者医療）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-03", weekday: "金", summary: "社一 船員・社労士法", tasks: [
+    { cat: "video", text: "社一レクチャー 7〜10本（船員保険・社労士法・確定拠出年金）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-04", weekday: "土", summary: "社一 残り＋市販本通読", tasks: [
+    { cat: "video", text: "社一レクチャー 11〜15本（児童手当・確定給付年金など）" },
+    { cat: "review", text: "市販本の社一パートを通読" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-05", weekday: "日", summary: "社一 総復習＋過去問", tasks: [
+    { cat: "exam", text: "セレクト過去問：社一を全問演習" },
+    { cat: "review", text: "市販本の社一統計パートをチェック" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-06", weekday: "月", summary: "労一スタート", tasks: [
+    { cat: "video", text: "労一レクチャー 1〜3本（労働組合法・労働関係調整法）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-07", weekday: "火", summary: "労一 個別労働関係法", tasks: [
+    { cat: "video", text: "労一レクチャー 4〜6本（パート・派遣・育介）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-08", weekday: "水", summary: "労一 男女雇均・最賃", tasks: [
+    { cat: "video", text: "労一レクチャー 7〜9本（男女雇均・最低賃金法・賃金支払）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-09", weekday: "木", summary: "労一 雇均・職業安定法", tasks: [
+    { cat: "video", text: "労一レクチャー 10〜12本（職業安定法・職業能力開発）" },
+    { cat: "problem", text: "視聴範囲のスマート問題集" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-10", weekday: "金", summary: "労一 残り＋市販本", tasks: [
+    { cat: "video", text: "労一レクチャー 13〜15本（残り全部）" },
+    { cat: "review", text: "市販本の労一パートを通読" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-11", weekday: "土", summary: "白書統計対策①", tasks: [
+    { cat: "video", text: "市販本の白書統計章を通読" },
+    { cat: "review", text: "厚労白書概要版PDFをダウンロードして目次確認" },
+    { cat: "note", text: "頻出統計の数字（労働力人口・失業率など）をノート化" }
+  ]},
+  { phase: 3, date: "2026-07-12", weekday: "日", summary: "白書統計対策②", tasks: [
+    { cat: "review", text: "厚労白書概要版を1時間で読む" },
+    { cat: "exam", text: "市販本の白書問題を解く" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-13", weekday: "月", summary: "横断整理開始", tasks: [
+    { cat: "video", text: "スタディング 横断整理講座 1〜3本" },
+    { cat: "note", text: "保険料率を全科目分まとめる" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-14", weekday: "火", summary: "横断 給付期間・支給開始年齢", tasks: [
+    { cat: "video", text: "横断整理講座 4〜6本" },
+    { cat: "note", text: "給付期間・支給開始年齢の横断表を作成" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-15", weekday: "水", summary: "横断 端数処理・時効", tasks: [
+    { cat: "video", text: "横断整理講座 7〜9本" },
+    { cat: "note", text: "端数処理・時効の横断表を作成" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-16", weekday: "木", summary: "横断 不服申立・罰則", tasks: [
+    { cat: "video", text: "横断整理講座 10〜12本" },
+    { cat: "note", text: "不服申立期限・罰則の横断表を作成" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-17", weekday: "金", summary: "横断 残り全部", tasks: [
+    { cat: "video", text: "横断整理講座 残り全部" },
+    { cat: "note", text: "横断ノートを完成させる" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-18", weekday: "土", summary: "横断ノート暗記日", tasks: [
+    { cat: "review", text: "横断ノート全体を音読（30分×2回）" },
+    { cat: "exam", text: "横断ノートから自作テストを作って解く" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-19", weekday: "日", summary: "一般常識 過去問総ざらい", tasks: [
+    { cat: "exam", text: "セレクト過去問：社一・労一を全問演習" },
+    { cat: "review", text: "間違えた問題はノート＋市販本で確認" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-20", weekday: "月・祝", summary: "法改正対策スタート", tasks: [
+    { cat: "video", text: "スタディング 法改正講座 1〜3本（最重要）" },
+    { cat: "note", text: "法改正ポイントをノートにまとめる" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-21", weekday: "火", summary: "法改正 労働編", tasks: [
+    { cat: "video", text: "法改正講座 4〜6本（労働関係改正）" },
+    { cat: "note", text: "労働関係の改正点を整理" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-22", weekday: "水", summary: "法改正 社保編", tasks: [
+    { cat: "video", text: "法改正講座 7〜9本（社保関係改正）" },
+    { cat: "note", text: "社保関係の改正点を整理" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-23", weekday: "木", summary: "法改正 残り全部", tasks: [
+    { cat: "video", text: "法改正講座 残り全部" },
+    { cat: "note", text: "法改正ノートを完成" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-24", weekday: "金", summary: "選択式集中演習①", tasks: [
+    { cat: "exam", text: "選択式：社一・労一を15問ずつ" },
+    { cat: "review", text: "条文の言い回しを音読" }
+  ]},
+  { phase: 3, date: "2026-07-25", weekday: "土", summary: "選択式集中演習②", tasks: [
+    { cat: "exam", text: "選択式：労基・安衛を15問ずつ" },
+    { cat: "exam", text: "選択式：労災・雇用を10問ずつ" }
+  ]},
+  { phase: 3, date: "2026-07-26", weekday: "日", summary: "選択式集中演習③", tasks: [
+    { cat: "exam", text: "選択式：健保・国年・厚年を15問ずつ" },
+    { cat: "review", text: "間違えた問題の条文確認" }
+  ]},
+  { phase: 3, date: "2026-07-27", weekday: "月", summary: "直前対策講座スタート", tasks: [
+    { cat: "video", text: "スタディング 直前対策講座 1〜3本" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-28", weekday: "火", summary: "直前対策 続き", tasks: [
+    { cat: "video", text: "直前対策講座 4〜6本" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-29", weekday: "水", summary: "直前対策 続き", tasks: [
+    { cat: "video", text: "直前対策講座 7〜9本" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-30", weekday: "木", summary: "直前対策 続き", tasks: [
+    { cat: "video", text: "直前対策講座 10〜12本" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 3, date: "2026-07-31", weekday: "金", summary: "直前対策 残り全部", tasks: [
+    { cat: "video", text: "直前対策講座 残り全部" },
+    { cat: "review", text: "8月の予定を確認" }
+  ]},
+
+  // ===== フェーズ4：8月（仕上げ・本試験） =====
+  { phase: 4, date: "2026-08-01", weekday: "土", summary: "スタディング全国模試（本番形式）", tasks: [
+    { cat: "exam", text: "選択式80分を本番時間で実施（10:30-11:50）" },
+    { cat: "exam", text: "択一式210分を本番時間で実施（13:20-16:50）" },
+    { cat: "review", text: "自己採点・弱点科目の特定" }
+  ]},
+  { phase: 4, date: "2026-08-02", weekday: "日", summary: "模試の徹底復習", tasks: [
+    { cat: "review", text: "模試で間違えた問題を全部やり直し" },
+    { cat: "review", text: "弱点科目の動画再視聴（必要箇所のみ）" },
+    { cat: "note", text: "横断ノートに新規論点を追加" }
+  ]},
+  { phase: 4, date: "2026-08-03", weekday: "月", summary: "弱点科目集中復習①", tasks: [
+    { cat: "review", text: "模試で最も点数が低かった科目を集中復習" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 4, date: "2026-08-04", weekday: "火", summary: "弱点科目集中復習②", tasks: [
+    { cat: "review", text: "2番目に低かった科目を集中復習" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 4, date: "2026-08-05", weekday: "水", summary: "横断・法改正の総復習", tasks: [
+    { cat: "review", text: "横断ノート全体を音読" },
+    { cat: "review", text: "法改正ノート全体を音読" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 4, date: "2026-08-06", weekday: "木", summary: "一般常識 最終チェック", tasks: [
+    { cat: "review", text: "市販本の社一・労一を再通読" },
+    { cat: "exam", text: "選択式：社一・労一を15問ずつ" }
+  ]},
+  { phase: 4, date: "2026-08-07", weekday: "金", summary: "数字暗記の総決算", tasks: [
+    { cat: "review", text: "数字ノート全体を音読（30分）" },
+    { cat: "exam", text: "横断ノートから自作テスト" }
+  ]},
+  { phase: 4, date: "2026-08-08", weekday: "土", summary: "過去問本試験形式①（直近年度）", tasks: [
+    { cat: "exam", text: "選択式80分を本番時間で実施" },
+    { cat: "exam", text: "択一式210分を本番時間で実施" },
+    { cat: "review", text: "自己採点・弱点抽出" }
+  ]},
+  { phase: 4, date: "2026-08-09", weekday: "日", summary: "本試験形式①の復習", tasks: [
+    { cat: "review", text: "間違えた問題を全部やり直し" },
+    { cat: "review", text: "本試験まで2週間：心理的に重要なペース調整日" }
+  ]},
+  { phase: 4, date: "2026-08-10", weekday: "月", summary: "弱点最終潰し①", tasks: [
+    { cat: "review", text: "弱点付箋を全部やり直し" },
+    { cat: "exam", text: "選択式：社一・労一・労基安衛を15問ずつ" }
+  ]},
+  { phase: 4, date: "2026-08-11", weekday: "火・祝", summary: "過去問本試験形式②（前年度）", tasks: [
+    { cat: "exam", text: "選択式・択一式を本番時間で実施" },
+    { cat: "review", text: "自己採点・最後の弱点抽出" }
+  ]},
+  { phase: 4, date: "2026-08-12", weekday: "水", summary: "弱点最終潰し②", tasks: [
+    { cat: "review", text: "11日の模試で間違えた問題をやり直し" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 4, date: "2026-08-13", weekday: "木", summary: "選択式の足切り対策", tasks: [
+    { cat: "exam", text: "選択式：社一・労一・労基安衛を20問ずつ" },
+    { cat: "review", text: "条文の言い回しに慣れる音読" }
+  ]},
+  { phase: 4, date: "2026-08-14", weekday: "金", summary: "選択式の足切り対策", tasks: [
+    { cat: "exam", text: "選択式：健保・国年・厚年を15問ずつ" },
+    { cat: "review", text: "数字ノート音読" }
+  ]},
+  { phase: 4, date: "2026-08-15", weekday: "土", summary: "横断ノート＋法改正最終確認", tasks: [
+    { cat: "review", text: "横断ノート全体を音読（午前）" },
+    { cat: "review", text: "法改正ノート全体を音読（午後）" },
+    { cat: "exam", text: "選択式練習10問" }
+  ]},
+  { phase: 4, date: "2026-08-16", weekday: "日", summary: "総まとめ日", tasks: [
+    { cat: "review", text: "全科目の数字を最終チェック" },
+    { cat: "review", text: "弱点付箋の最終やり直し" },
+    { cat: "rest", text: "新しい問題には絶対に手を出さない" }
+  ]},
+  { phase: 4, date: "2026-08-17", weekday: "月", summary: "選択式集中（本試験まで6日）", tasks: [
+    { cat: "exam", text: "選択式：全科目を5問ずつ" },
+    { cat: "review", text: "横断ノート音読15分" }
+  ]},
+  { phase: 4, date: "2026-08-18", weekday: "火", summary: "選択式集中（本試験まで5日）", tasks: [
+    { cat: "exam", text: "選択式：社一・労一を20問" },
+    { cat: "review", text: "法改正ノート音読15分" }
+  ]},
+  { phase: 4, date: "2026-08-19", weekday: "水", summary: "択一の感覚維持（本試験まで4日）", tasks: [
+    { cat: "exam", text: "択一を1日30問程度（軽め）" },
+    { cat: "review", text: "数字ノート音読" }
+  ]},
+  { phase: 4, date: "2026-08-20", weekday: "木", summary: "本試験まで3日：軽めに", tasks: [
+    { cat: "exam", text: "選択式練習10問" },
+    { cat: "review", text: "弱点ノートのみ確認" },
+    { cat: "rest", text: "早めに就寝" }
+  ]},
+  { phase: 4, date: "2026-08-21", weekday: "金", summary: "本試験まで2日：体調整える", tasks: [
+    { cat: "review", text: "横断ノート＋法改正ノートのみ" },
+    { cat: "rest", text: "早めに就寝・体調管理" }
+  ]},
+  { phase: 4, date: "2026-08-22", weekday: "土", summary: "本試験前日：早めに切り上げ", tasks: [
+    { cat: "review", text: "数字ノートを軽く確認（午前のみ）" },
+    { cat: "rest", text: "持ち物確認（受験票・鉛筆・消しゴム・腕時計）" },
+    { cat: "rest", text: "会場までの経路確認" },
+    { cat: "rest", text: "21時までに就寝準備" }
+  ]},
+  { phase: 4, date: "2026-08-23", weekday: "日", summary: "🎯 本試験当日", tasks: [
+    { cat: "exam", text: "朝食をしっかり食べる" },
+    { cat: "exam", text: "選択式：得意科目から解く／社一・労一は最後に時間をかけて" },
+    { cat: "exam", text: "昼食は軽め（眠気対策）" },
+    { cat: "exam", text: "択一式：労一・社一を最初／労働実体法→社保の順" },
+    { cat: "exam", text: "2択まで絞れたら直感を信じる（足切り回避）" }
+  ]}
+];
+
+// ============================================================
+// 状態管理（localStorage で永続化）
+// ============================================================
+const STORAGE_KEY = "sharoushi2026_progress";
+let progress = loadProgress();
+let currentFilter = "all";
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return {};
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function isInCurrentWeek(dateStr) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayOfWeek = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const target = new Date(dateStr);
+  return target >= monday && target <= sunday;
+}
+
+function getTaskKey(date, idx) {
+  return `${date}_${idx}`;
+}
+
+function isTaskDone(date, idx) {
+  return !!progress[getTaskKey(date, idx)];
+}
+
+function isDayDone(day) {
+  return day.tasks.every((_, idx) => isTaskDone(day.date, idx));
+}
+
+function isDayPast(dateStr) {
+  return dateStr < todayStr();
+}
+
+function toggleTask(date, idx) {
+  const key = getTaskKey(date, idx);
+  if (progress[key]) delete progress[key];
+  else progress[key] = true;
+  saveProgress();
+  render();
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("filter" + filter[0].toUpperCase() + filter.slice(1)).classList.add("active");
+  render();
+}
+
+function expandAll() {
+  document.querySelectorAll(".day").forEach(d => d.classList.remove("collapsed"));
+}
+function collapseAll() {
+  document.querySelectorAll(".day").forEach(d => d.classList.add("collapsed"));
+}
+
+function resetAll() {
+  if (confirm("全ての進捗をリセットします。よろしいですか？")) {
+    progress = {};
+    saveProgress();
+    render();
+  }
+}
+
+function getDayClasses(day) {
+  const classes = ["day"];
+  const today = todayStr();
+  const allDone = isDayDone(day);
+  if (day.date === today) classes.push("today");
+  if (allDone) classes.push("done");
+  if (isDayPast(day.date) && !allDone) classes.push("past");
+  return classes.join(" ");
+}
+
+function getTagInfo(day) {
+  const today = todayStr();
+  if (day.date === today) return { cls: "today-tag", text: "今日" };
+  if (day.date === "2026-08-23") return { cls: "exam", text: "本試験" };
+  if (day.weekday.includes("祝")) return { cls: "holiday", text: day.weekday };
+  if (day.weekday === "土" || day.weekday === "日") return { cls: "weekend", text: day.weekday };
+  return { cls: "", text: day.weekday };
+}
+
+function shouldShowDay(day) {
+  if (currentFilter === "all") return true;
+  if (currentFilter === "today") return day.date === todayStr();
+  if (currentFilter === "week") return isInCurrentWeek(day.date);
+  if (currentFilter === "undone") return !isDayDone(day);
+  return true;
+}
+
+function getPhaseInfo(phase) {
+  return {
+    1: { name: "フェーズ1：5月", subtitle: "社会保険科目の再構築" },
+    2: { name: "フェーズ2：6月", subtitle: "労働科目復元＋過去問着手" },
+    3: { name: "フェーズ3：7月", subtitle: "一般常識・横断・選択式" },
+    4: { name: "フェーズ4：8月", subtitle: "仕上げ・本試験" }
+  }[phase];
+}
+
+function render() {
+  const container = document.getElementById("schedule");
+  container.innerHTML = "";
+
+  // 全体進捗
+  const totalTasks = schedule.reduce((sum, d) => sum + d.tasks.length, 0);
+  const doneTasks = schedule.reduce(
+    (sum, d) => sum + d.tasks.filter((_, i) => isTaskDone(d.date, i)).length,
+    0
+  );
+  const pct = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  document.getElementById("overallText").textContent =
+    `全体進捗：${doneTasks} / ${totalTasks} タスク完了（${pct}%）`;
+  document.getElementById("overallBar").style.width = pct + "%";
+
+  // 試験日カウントダウン
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const examDay = new Date("2026-08-23");
+  const daysLeft = Math.ceil((examDay - today) / (1000 * 60 * 60 * 24));
+  const dl = document.getElementById("daysLeft");
+  if (daysLeft > 0) dl.textContent = `⏰ 試験まで ${daysLeft} 日`;
+  else if (daysLeft === 0) dl.textContent = `🎯 本日が試験日です`;
+  else dl.textContent = `試験終了`;
+
+  // 表示対象日
+  const visibleDays = schedule.filter(shouldShowDay);
+
+  if (visibleDays.length === 0) {
+    container.innerHTML = '<div class="empty-state">該当する日がありません</div>';
+    return;
+  }
+
+  // フェーズごとにグループ化
+  const phaseGroups = {};
+  visibleDays.forEach(day => {
+    if (!phaseGroups[day.phase]) phaseGroups[day.phase] = [];
+    phaseGroups[day.phase].push(day);
+  });
+
+  Object.keys(phaseGroups).forEach(phaseNum => {
+    const phaseDays = phaseGroups[phaseNum];
+    const info = getPhaseInfo(parseInt(phaseNum));
+
+    // フェーズ全体のタスク数（フィルタ無視）
+    const phaseAllDays = schedule.filter(d => d.phase === parseInt(phaseNum));
+    const phaseTotalTasks = phaseAllDays.reduce((s, d) => s + d.tasks.length, 0);
+    const phaseDoneTasks = phaseAllDays.reduce(
+      (s, d) => s + d.tasks.filter((_, i) => isTaskDone(d.date, i)).length, 0
+    );
+    const phasePct = phaseTotalTasks ? Math.round((phaseDoneTasks / phaseTotalTasks) * 100) : 0;
+
+    const phaseDiv = document.createElement("div");
+    phaseDiv.className = "phase";
+    phaseDiv.innerHTML = `
+      <div class="phase-header phase-${phaseNum}">
+        <span>${info.name} — ${info.subtitle}</span>
+        <span class="phase-progress">${phaseDoneTasks}/${phaseTotalTasks} (${phasePct}%)</span>
+      </div>
+    `;
+
+    phaseDays.forEach(day => {
+      const dayDiv = document.createElement("div");
+      dayDiv.className = getDayClasses(day);
+      const tag = getTagInfo(day);
+      const dateLabel = day.date.replace("2026-", "").replace("-", "/");
+
+      // 日のヘッダー
+      const tasksHtml = day.tasks.map((task, idx) => {
+        const checked = isTaskDone(day.date, idx);
+        return `
+          <div class="task ${checked ? 'checked' : ''}">
+            <input type="checkbox" id="t-${day.date}-${idx}" ${checked ? 'checked' : ''}
+              onchange="toggleTask('${day.date}', ${idx})">
+            <label for="t-${day.date}-${idx}">
+              <span class="task-cat ${task.cat}">${getCatLabel(task.cat)}</span>${escapeHtml(task.text)}
+            </label>
+          </div>
+        `;
+      }).join("");
+
+      dayDiv.innerHTML = `
+        <div class="day-header">
+          <span class="day-date">${dateLabel}</span>
+          <span class="day-tag ${tag.cls}">${tag.text}</span>
+          <span class="day-summary">${escapeHtml(day.summary)}</span>
+        </div>
+        <div class="day-tasks">${tasksHtml}</div>
+      `;
+      phaseDiv.appendChild(dayDiv);
+    });
+
+    container.appendChild(phaseDiv);
+  });
+}
+
+function getCatLabel(cat) {
+  return {
+    video: "動画",
+    problem: "問題",
+    review: "復習",
+    note: "ノート",
+    exam: "演習",
+    rest: "管理"
+  }[cat] || cat;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+render();
+</script>
+
+</body>
+</html>
