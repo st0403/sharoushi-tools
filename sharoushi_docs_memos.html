@@ -2,12 +2,15 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="color-scheme" content="light only">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>社労士 資料・メモ</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { color-scheme: light; }
   html, body { overscroll-behavior-y: contain; }
   body {
+    color-scheme: light;
     font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
     background: #f5f3ee;
     color: #2c2c2a;
@@ -366,41 +369,7 @@
     font-family: inherit;
   }
 
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a18; color: #e8e6df; }
-    header { background: #1a1a18; border-color: rgba(255,255,255,0.08); }
-    .mode-tab, .filter-chip, .doc-card, .memo-card, .doc-header,
-    .modal input, .modal textarea, .modal select, .modal-buttons button,
-    .export-bar button, .memo-actions button {
-      background: #2c2c2a; color: #e8e6df; border-color: rgba(255,255,255,0.1);
-    }
-    .doc-header { background: #3a3a37; }
-    .doc-table th { background: #3a3a37; color: #e8e6df; }
-    .doc-table th, .doc-table td { border-color: rgba(255,255,255,0.15); }
-    .doc-formula { background: #3a3a37; }
-    .doc-note { background: #633806; color: #FAC775; border-color: #BA7517; }
-    .doc-section-title, .memo-title { color: #e8e6df; border-color: rgba(255,255,255,0.1); }
-    .memo-body { color: #c2c0b6; }
-    .memo-cat-tag { background: #3a3a37; color: #b4b2a9; }
-    .memo-cat-tag[data-cat="改正"] { background: #712B13; color: #F5C4B3; }
-    .memo-cat-tag[data-cat="弱点"] { background: #633806; color: #FAC775; }
-    .memo-cat-tag[data-cat="間違え"] { background: #501313; color: #F7C1C1; }
-    .memo-cat-tag[data-cat="横断"] { background: #3C3489; color: #CECBF6; }
-    .memo-cat-tag[data-cat="ゴロ"] { background: #085041; color: #9FE1CB; }
-    .memo-subject-tag { background: #3a3a37; color: #b4b2a9; }
-    .stats, .doc-meta, .doc-toggle, .memo-date, .empty { color: #b4b2a9; }
-    .modal { background: #1a1a18; }
-    .mode-tab.active, .filter-chip.active {
-      background: #e8e6df; color: #1a1a18; border-color: #e8e6df;
-    }
-    .modal-buttons button.primary {
-      background: #1d9e75; color: white;
-    }
-    .modal-buttons button.danger {
-      background: #501313; color: #F7C1C1; border-color: #A32D2D;
-    }
-    .add-btn { background: #1d9e75; }
-  }
+  
 </style>
 </head>
 <body>

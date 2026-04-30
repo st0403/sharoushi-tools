@@ -2,12 +2,15 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="color-scheme" content="light only">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>社労士 ○×問題集</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { color-scheme: light; }
   html, body { overscroll-behavior-y: contain; }
   body {
+    color-scheme: light;
     font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
     background: #f5f3ee;
     color: #2c2c2a;
@@ -465,42 +468,7 @@
     margin-top: 8px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a18; color: #e8e6df; }
-    header { background: #1a1a18; border-color: rgba(255,255,255,0.08); }
-    .mode-tab, .filter-chip, .quiz-card, .ox-btn, .answer-box,
-    .quiz-actions button, .modal input, .modal textarea, .modal select,
-    .modal-buttons button, .export-bar button, .list-item, .list-controls button,
-    .list-item-actions button, .session-config, .session-config input,
-    .ans-toggle label {
-      background: #2c2c2a; color: #e8e6df; border-color: rgba(255,255,255,0.1);
-    }
-    .answer-box { background: #3a3a37; }
-    .answer-box.correct { background: #173404; }
-    .answer-box.wrong { background: #501313; }
-    .answer-explain { color: #c2c0b6; }
-    .list-item-explain { background: #3a3a37; color: #b4b2a9; }
-    .ox-btn.selected.correct { background: #173404; border-color: #639922; }
-    .ox-btn.selected.wrong { background: #501313; border-color: #A32D2D; }
-    .quiz-tag { background: #3a3a37; color: #b4b2a9; }
-    .quiz-tag.subject { background: #3C3489; color: #CECBF6; }
-    .quiz-tag.topic { background: #3a3a37; color: #b4b2a9; }
-    .stats, .quiz-progress, .empty, .session-rate, .list-item-meta { color: #b4b2a9; }
-    .list-item-meta .ans-mark.maru { background: #173404; color: #C0DD97; }
-    .list-item-meta .ans-mark.batsu { background: #501313; color: #F7C1C1; }
-    .modal { background: #1a1a18; }
-    .session-result { background: #2c2c2a; border-color: rgba(255,255,255,0.1); }
-    .mode-tab.active, .filter-chip.active {
-      background: #e8e6df; color: #1a1a18; border-color: #e8e6df;
-    }
-    .quiz-actions button.primary, .list-controls button.primary,
-    .modal-buttons button.primary {
-      background: #e8e6df; color: #1a1a18; border-color: #e8e6df;
-    }
-    .ans-toggle label:has(input:checked) {
-      background: #e8e6df; color: #1a1a18; border-color: #e8e6df;
-    }
-  }
+  
 </style>
 </head>
 <body>
