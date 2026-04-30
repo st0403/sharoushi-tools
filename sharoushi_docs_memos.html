@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>社労士 資料・メモ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: contain; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    background: #f5f3ee;
+    color: #2c2c2a;
+    line-height: 1.5;
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    background: #f5f3ee;
+    z-index: 10;
+    padding: 12px 14px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .stats { font-size: 11px; color: #5f5e5a; font-weight: 400; }
+  .mode-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+  .mode-tab {
+    flex: 1; padding: 8px 4px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 6px;
+    font-size: 13px; cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+    text-align: center;
+  }
+  .mode-tab.active {
+    background: #2c2c2a; color: white; border-color: #2c2c2a;
+  }
+  .filter-bar {
+    display: flex; gap: 6px;
+    overflow-x: auto;
+    padding: 8px 0 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 14px;
+    font-size: 12px; cursor: pointer;
+    white-space: nowrap;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .filter-chip.active {
+    background: #2c2c2a; color: white; border-color: #2c2c2a;
+  }
+  .filter-chip .count {
+    font-size: 10px; opacity: 0.7; margin-left: 3px;
+  }
+
+  main { padding: 12px 14px; }
+
+  /* === 資料モード === */
+  .doc-card {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .doc-header {
+    padding: 12px 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f1efe8;
+    user-select: none;
+  }
+  .doc-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c2c2a;
+  }
+  .doc-meta {
+    font-size: 11px;
+    color: #888780;
+  }
+  .doc-toggle {
+    font-size: 12px;
+    color: #888780;
+    margin-left: 8px;
+  }
+  .doc-card.collapsed .doc-body { display: none; }
+  .doc-body {
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 12px;
+  }
+  .doc-table th, .doc-table td {
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .doc-table th {
+    background: #f1efe8;
+    font-weight: 500;
+  }
+  .doc-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .doc-formula {
+    background: #f1efe8;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 8px 0;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .doc-formula strong { color: #1d9e75; }
+  .doc-note {
+    background: #FAEEDA;
+    padding: 8px 10px;
+    border-radius: 4px;
+    margin: 6px 0;
+    font-size: 12px;
+    color: #412402;
+    border-left: 3px solid #EF9F27;
+  }
+  .doc-list {
+    padding-left: 18px;
+  }
+  .doc-list li {
+    margin-bottom: 4px;
+  }
+  .doc-section-title {
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    color: #444441;
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .doc-section-title:first-child {
+    margin-top: 0;
+  }
+
+  /* === メモモード === */
+  .add-btn {
+    width: 100%;
+    padding: 12px;
+    background: #1d9e75;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .memo-card {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-left: 4px solid #d3d1c7;
+  }
+  .memo-card[data-cat="改正"] { border-left-color: #D85A30; }
+  .memo-card[data-cat="弱点"] { border-left-color: #EF9F27; }
+  .memo-card[data-cat="間違え"] { border-left-color: #E24B4A; }
+  .memo-card[data-cat="横断"] { border-left-color: #7F77DD; }
+  .memo-card[data-cat="ゴロ"] { border-left-color: #1D9E75; }
+  .memo-card[data-cat="その他"] { border-left-color: #888780; }
+  .memo-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .memo-cat-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #f1efe8;
+    color: #5f5e5a;
+  }
+  .memo-cat-tag[data-cat="改正"] { background: #FAECE7; color: #4A1B0C; }
+  .memo-cat-tag[data-cat="弱点"] { background: #FAEEDA; color: #412402; }
+  .memo-cat-tag[data-cat="間違え"] { background: #FCEBEB; color: #501313; }
+  .memo-cat-tag[data-cat="横断"] { background: #EEEDFE; color: #26215C; }
+  .memo-cat-tag[data-cat="ゴロ"] { background: #E1F5EE; color: #04342C; }
+  .memo-subject-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #d3d1c7;
+    color: #2c2c2a;
+  }
+  .memo-date {
+    font-size: 10px;
+    color: #888780;
+    margin-left: auto;
+  }
+  .memo-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c2c2a;
+    margin-bottom: 4px;
+    word-wrap: break-word;
+  }
+  .memo-body {
+    font-size: 13px;
+    color: #444441;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.6;
+  }
+  .memo-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+  .memo-actions button {
+    background: none;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #5f5e5a;
+    font-family: inherit;
+  }
+  .memo-actions button.danger { color: #a32d2d; }
+
+  /* === モーダル === */
+  .modal-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-bg.active { display: flex; }
+  .modal {
+    background: #f5f3ee;
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+    border-radius: 12px 12px 0 0;
+    padding: 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal h2 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .modal label {
+    display: block;
+    font-size: 12px;
+    color: #5f5e5a;
+    margin: 10px 0 4px;
+  }
+  .modal input, .modal textarea, .modal select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+    color: #2c2c2a;
+  }
+  .modal textarea {
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .modal-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .modal-buttons button {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .modal-buttons button.primary {
+    background: #1d9e75;
+    color: white;
+    border-color: #1d9e75;
+    font-weight: 500;
+  }
+  .modal-buttons button.danger {
+    background: #fcebeb;
+    color: #791f1f;
+    border-color: #f09595;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888780;
+    font-size: 13px;
+  }
+  .empty-help {
+    margin-top: 8px;
+    font-size: 11px;
+  }
+
+  .export-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .export-bar button {
+    flex: 1;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a18; color: #e8e6df; }
+    header { background: #1a1a18; border-color: rgba(255,255,255,0.08); }
+    .mode-tab, .filter-chip, .doc-card, .memo-card, .doc-header,
+    .modal input, .modal textarea, .modal select, .modal-buttons button,
+    .export-bar button, .memo-actions button {
+      background: #2c2c2a; color: #e8e6df; border-color: rgba(255,255,255,0.1);
+    }
+    .doc-header { background: #3a3a37; }
+    .doc-table th { background: #3a3a37; color: #e8e6df; }
+    .doc-table th, .doc-table td { border-color: rgba(255,255,255,0.15); }
+    .doc-formula { background: #3a3a37; }
+    .doc-note { background: #633806; color: #FAC775; border-color: #BA7517; }
+    .doc-section-title, .memo-title { color: #e8e6df; border-color: rgba(255,255,255,0.1); }
+    .memo-body { color: #c2c0b6; }
+    .memo-cat-tag { background: #3a3a37; color: #b4b2a9; }
+    .memo-cat-tag[data-cat="改正"] { background: #712B13; color: #F5C4B3; }
+    .memo-cat-tag[data-cat="弱点"] { background: #633806; color: #FAC775; }
+    .memo-cat-tag[data-cat="間違え"] { background: #501313; color: #F7C1C1; }
+    .memo-cat-tag[data-cat="横断"] { background: #3C3489; color: #CECBF6; }
+    .memo-cat-tag[data-cat="ゴロ"] { background: #085041; color: #9FE1CB; }
+    .memo-subject-tag { background: #3a3a37; color: #b4b2a9; }
+    .stats, .doc-meta, .doc-toggle, .memo-date, .empty { color: #b4b2a9; }
+    .modal { background: #1a1a18; }
+    .mode-tab.active, .filter-chip.active {
+      background: #e8e6df; color: #1a1a18; border-color: #e8e6df;
+    }
+    .modal-buttons button.primary {
+      background: #1d9e75; color: white;
+    }
+    .modal-buttons button.danger {
+      background: #501313; color: #F7C1C1; border-color: #A32D2D;
+    }
+    .add-btn { background: #1d9e75; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    <span>📚 資料・メモ</span>
+    <span class="stats" id="stats"></span>
+  </h1>
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="modeDoc" onclick="setMode('doc')">資料</button>
+    <button class="mode-tab" id="modeMemo" onclick="setMode('memo')">メモ</button>
+  </div>
+  <div class="filter-bar" id="filterBar"></div>
+</header>
+
+<main id="main"></main>
+
+<!-- メモ追加・編集モーダル -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2 id="modalTitle">メモを追加</h2>
+    <label>カテゴリ</label>
+    <select id="memoCat">
+      <option value="改正">📝 法改正ポイント</option>
+      <option value="弱点">⚠️ 弱点・苦手論点</option>
+      <option value="間違え">❌ 間違えノート</option>
+      <option value="横断">🔀 横断比較</option>
+      <option value="ゴロ">💡 暗記ゴロ・覚え方</option>
+      <option value="その他">📌 その他</option>
+    </select>
+    <label>科目（任意）</label>
+    <select id="memoSubject">
+      <option value="">--選択--</option>
+      <option value="労基">労基</option>
+      <option value="安衛">安衛</option>
+      <option value="労災">労災</option>
+      <option value="雇用">雇用</option>
+      <option value="徴収">徴収</option>
+      <option value="健保">健保</option>
+      <option value="国年">国年</option>
+      <option value="厚年">厚年</option>
+      <option value="社一">社一</option>
+      <option value="労一">労一</option>
+      <option value="横断">横断</option>
+    </select>
+    <label>タイトル</label>
+    <input type="text" id="memoTitle" placeholder="例：傷病手当金の支給期間改正">
+    <label>本文</label>
+    <textarea id="memoBody" placeholder="自由に記述..."></textarea>
+    <div class="modal-buttons">
+      <button onclick="closeModal()">キャンセル</button>
+      <button class="primary" onclick="saveMemo()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 資料データ：構造化された表・計算式・図解
+// ============================================================
+const DOCS = [
+  {
+    s: "健保",
+    title: "標準報酬月額（健康保険）",
+    body: `
+      <div class="doc-section-title">概要</div>
+      <p>健康保険の標準報酬月額は<strong>第1級〜第50級</strong>に区分。賞与は標準賞与額として年間573万円が累計上限。</p>
+      <div class="doc-section-title">主要な等級と月額</div>
+      <table class="doc-table">
+        <thead><tr><th>等級</th><th>月額</th><th>報酬月額の範囲</th></tr></thead>
+        <tbody>
+          <tr><td>1級</td><td class="num">58,000</td><td>〜63,000未満</td></tr>
+          <tr><td>5級</td><td class="num">98,000</td><td>93,000〜101,000</td></tr>
+          <tr><td>10級</td><td class="num">134,000</td><td>130,000〜138,000</td></tr>
+          <tr><td>20級</td><td class="num">240,000</td><td>230,000〜250,000</td></tr>
+          <tr><td>30級</td><td class="num">410,000</td><td>395,000〜425,000</td></tr>
+          <tr><td>40級</td><td class="num">680,000</td><td>665,000〜695,000</td></tr>
+          <tr><td>50級</td><td class="num">1,390,000</td><td>1,355,000以上</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">厚年は第1級〜第32級（上限65万円）。健保は50級までで上限が高いことに注意。</div>
+    `
+  },
+  {
+    s: "厚年",
+    title: "標準報酬月額（厚生年金）",
+    body: `
+      <div class="doc-section-title">概要</div>
+      <p>厚生年金の標準報酬月額は<strong>第1級〜第32級</strong>。標準賞与額は1か月あたり150万円が上限。</p>
+      <div class="doc-section-title">等級の上限・下限</div>
+      <table class="doc-table">
+        <thead><tr><th>等級</th><th>月額</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>1級</td><td class="num">88,000</td><td>下限</td></tr>
+          <tr><td>32級</td><td class="num">650,000</td><td>上限</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">健保（50級・1,390,000円）と厚年（32級・650,000円）の上限差は頻出論点。</div>
+    `
+  },
+  {
+    s: "厚年",
+    title: "老齢厚生年金の計算式",
+    body: `
+      <div class="doc-section-title">基本構造</div>
+      <div class="doc-formula">
+        <strong>老齢厚生年金（報酬比例部分）</strong><br>
+        ＝ 平均標準報酬額 × 給付乗率 × 被保険者期間の月数
+      </div>
+      <div class="doc-section-title">給付乗率（生年月日で異なる）</div>
+      <table class="doc-table">
+        <thead><tr><th>期間</th><th>乗率（本来）</th><th>乗率（従前）</th></tr></thead>
+        <tbody>
+          <tr><td>平成15年3月以前</td><td class="num">7.125/1000</td><td class="num">7.5/1000</td></tr>
+          <tr><td>平成15年4月以降</td><td class="num">5.481/1000</td><td class="num">5.769/1000</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">本来水準と従前額保障で計算し、高い方が支給される。総報酬制導入（H15.4）が境目。</div>
+      <div class="doc-section-title">加給年金額</div>
+      <p>被保険者期間20年以上＋65歳未満の配偶者または子がいる場合、加給年金が加算される。配偶者：約228,700円＋特別加算（生年月日別）。</p>
+    `
+  },
+  {
+    s: "国年",
+    title: "老齢基礎年金の計算式",
+    body: `
+      <div class="doc-section-title">満額（保険料納付済期間40年＝480月）</div>
+      <div class="doc-formula">
+        <strong>満額：816,000円（令和6年度・67歳以下）</strong><br>
+        新規裁定者と既裁定者で異なる場合あり
+      </div>
+      <div class="doc-section-title">部分受給の計算式</div>
+      <div class="doc-formula">
+        年金額 ＝ 満額 × <br>
+        （納付済月数 ＋ 全額免除月数 × 1/2 ＋ 4分の1納付月数 × 5/8 ＋ 半額納付月数 × 6/8 ＋ 4分の3納付月数 × 7/8）／ 480
+      </div>
+      <div class="doc-note">免除期間の算入率：全額免除＝1/2、4分の1納付＝5/8、半額納付＝6/8、4分の3納付＝7/8（H21.4以降）</div>
+      <div class="doc-section-title">繰上げ・繰下げ</div>
+      <ul class="doc-list">
+        <li>繰上げ：1か月あたり0.4％減額（最大60か月＝24%減）</li>
+        <li>繰下げ：1か月あたり0.7％増額（最大120か月＝84%増）</li>
+      </ul>
+    `
+  },
+  {
+    s: "雇用",
+    title: "基本手当の所定給付日数",
+    body: `
+      <div class="doc-section-title">①一般受給資格者（自己都合等）</div>
+      <table class="doc-table">
+        <thead><tr><th>被保険者期間</th><th>全年齢</th></tr></thead>
+        <tbody>
+          <tr><td>1年未満</td><td class="num">—</td></tr>
+          <tr><td>1〜10年未満</td><td class="num">90日</td></tr>
+          <tr><td>10〜20年未満</td><td class="num">120日</td></tr>
+          <tr><td>20年以上</td><td class="num">150日</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-section-title">②特定受給資格者・特定理由離職者（倒産・解雇等）</div>
+      <table class="doc-table">
+        <thead><tr><th>年齢／期間</th><th>1年未満</th><th>1〜5年</th><th>5〜10年</th><th>10〜20年</th><th>20年以上</th></tr></thead>
+        <tbody>
+          <tr><td>30歳未満</td><td class="num">90</td><td class="num">90</td><td class="num">120</td><td class="num">180</td><td class="num">—</td></tr>
+          <tr><td>30〜35歳</td><td class="num">90</td><td class="num">120</td><td class="num">180</td><td class="num">210</td><td class="num">240</td></tr>
+          <tr><td>35〜45歳</td><td class="num">90</td><td class="num">150</td><td class="num">180</td><td class="num">240</td><td class="num">270</td></tr>
+          <tr><td>45〜60歳</td><td class="num">90</td><td class="num">180</td><td class="num">240</td><td class="num">270</td><td class="num">330</td></tr>
+          <tr><td>60〜65歳</td><td class="num">90</td><td class="num">150</td><td class="num">180</td><td class="num">210</td><td class="num">240</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">最大日数は45〜60歳・20年以上の<strong>330日</strong>。45歳未満と60歳以上は最大270日（35〜45歳）。</div>
+      <div class="doc-section-title">③就職困難者</div>
+      <table class="doc-table">
+        <thead><tr><th>年齢</th><th>1年未満</th><th>1年以上</th></tr></thead>
+        <tbody>
+          <tr><td>45歳未満</td><td class="num">150日</td><td class="num">300日</td></tr>
+          <tr><td>45〜65歳</td><td class="num">150日</td><td class="num">360日</td></tr>
+        </tbody>
+      </table>
+    `
+  },
+  {
+    s: "労災",
+    title: "労災給付一覧（業務災害）",
+    body: `
+      <div class="doc-section-title">主要な給付</div>
+      <table class="doc-table">
+        <thead><tr><th>給付名</th><th>支給内容</th><th>支給期間／回数</th></tr></thead>
+        <tbody>
+          <tr><td>療養補償給付</td><td>必要な療養費全額</td><td>治癒まで</td></tr>
+          <tr><td>休業補償給付</td><td>給付基礎日額の60%</td><td>4日目から</td></tr>
+          <tr><td>休業特別支給金</td><td>給付基礎日額の20%</td><td>4日目から</td></tr>
+          <tr><td>傷病補償年金</td><td>等級により給付基礎日額の313〜245日分</td><td>1年6か月後</td></tr>
+          <tr><td>障害補償年金</td><td>1〜7級：給付基礎日額の313〜131日分</td><td>終身</td></tr>
+          <tr><td>障害補償一時金</td><td>8〜14級：給付基礎日額の503〜56日分</td><td>一時金</td></tr>
+          <tr><td>遺族補償年金</td><td>給付基礎日額の153〜245日分</td><td>失権まで</td></tr>
+          <tr><td>遺族補償一時金</td><td>給付基礎日額の1000日分</td><td>遺族なき場合</td></tr>
+          <tr><td>葬祭料</td><td>315,000＋給付基礎日額30日分（または60日分）</td><td>一時金</td></tr>
+          <tr><td>介護補償給付</td><td>常時／随時介護で月額異なる</td><td>必要期間</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">通勤災害は「補償」が付かない（療養給付・休業給付など）。給付内容自体は同じ。</div>
+    `
+  },
+  {
+    s: "横断",
+    title: "時効の横断整理",
+    body: `
+      <div class="doc-section-title">主要な時効一覧</div>
+      <table class="doc-table">
+        <thead><tr><th>制度</th><th>時効</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>労基法（賃金請求権）</td><td>3年</td><td>当面の間（本則は5年）</td></tr>
+          <tr><td>労基法（退職手当）</td><td>5年</td><td></td></tr>
+          <tr><td>労基法（災害補償）</td><td>2年</td><td></td></tr>
+          <tr><td>労災（療養・休業・葬祭料）</td><td>2年</td><td></td></tr>
+          <tr><td>労災（障害・遺族）</td><td>5年</td><td></td></tr>
+          <tr><td>雇用保険（給付全般）</td><td>2年</td><td></td></tr>
+          <tr><td>健康保険（給付）</td><td>2年</td><td></td></tr>
+          <tr><td>健康保険（保険料徴収権）</td><td>2年</td><td></td></tr>
+          <tr><td>国民年金（年金給付）</td><td>5年</td><td></td></tr>
+          <tr><td>厚生年金（年金給付）</td><td>5年</td><td></td></tr>
+          <tr><td>国年・厚年（保険料徴収権）</td><td>2年</td><td></td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">記憶法：年金関係（障害・遺族含む）は5年、それ以外は基本2年。労基の賃金は3年（本来5年だが当面の間3年）。</div>
+    `
+  },
+  {
+    s: "横断",
+    title: "不服申立ての横断整理",
+    body: `
+      <div class="doc-section-title">審査請求の期限と機関</div>
+      <table class="doc-table">
+        <thead><tr><th>制度</th><th>期限</th><th>審査機関</th></tr></thead>
+        <tbody>
+          <tr><td>労災保険</td><td>3か月以内</td><td>労働者災害補償保険審査官</td></tr>
+          <tr><td>雇用保険</td><td>3か月以内</td><td>雇用保険審査官</td></tr>
+          <tr><td>健康保険</td><td>3か月以内</td><td>社会保険審査官</td></tr>
+          <tr><td>国民年金</td><td>3か月以内</td><td>社会保険審査官</td></tr>
+          <tr><td>厚生年金</td><td>3か月以内</td><td>社会保険審査官</td></tr>
+          <tr><td>徴収法（労災・雇用）</td><td>3か月以内</td><td>厚生労働大臣</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">期限はすべて<strong>処分を知った日の翌日から3か月以内</strong>で統一。再審査請求は2か月以内（労災・雇用・健保・国年・厚年）。</div>
+    `
+  },
+  {
+    s: "横断",
+    title: "端数処理の横断整理",
+    body: `
+      <div class="doc-section-title">主要な端数処理</div>
+      <table class="doc-table">
+        <thead><tr><th>項目</th><th>処理方法</th></tr></thead>
+        <tbody>
+          <tr><td>標準報酬月額（健保・厚年）</td><td>50円未満切捨て、50円以上100円未満切上げ</td></tr>
+          <tr><td>給付基礎日額</td><td>1円未満切上げ</td></tr>
+          <tr><td>賃金日額</td><td>1円未満切捨て</td></tr>
+          <tr><td>基本手当日額</td><td>1円未満切捨て</td></tr>
+          <tr><td>年金額（円単位）</td><td>50銭未満切捨て、50銭以上1円未満切上げ</td></tr>
+          <tr><td>保険料率</td><td>小数点以下3位を四捨五入</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">「労災・雇用の日額系は1円単位、年金は円単位（50銭ライン）」と覚えると整理しやすい。</div>
+    `
+  },
+  {
+    s: "横断",
+    title: "保険料率の横断整理（令和6年度）",
+    body: `
+      <div class="doc-section-title">主要な保険料率</div>
+      <table class="doc-table">
+        <thead><tr><th>制度</th><th>料率</th><th>負担</th></tr></thead>
+        <tbody>
+          <tr><td>厚生年金保険料</td><td>18.3%</td><td>労使折半</td></tr>
+          <tr><td>健康保険料（協会けんぽ平均）</td><td>約10.0%</td><td>労使折半</td></tr>
+          <tr><td>介護保険料（健保第2号）</td><td>約1.6%</td><td>労使折半</td></tr>
+          <tr><td>雇用保険料（一般）</td><td>15.5/1000</td><td>労9.5/事業主6.0</td></tr>
+          <tr><td>労災保険料</td><td>業種により0.25〜8.8%</td><td>事業主全額</td></tr>
+          <tr><td>国民年金保険料</td><td>16,980円/月</td><td>本人</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">毎年改定される項目あり。試験前（7月）に必ず最新値で確認。</div>
+    `
+  },
+  {
+    s: "健保",
+    title: "高額療養費の自己負担限度額",
+    body: `
+      <div class="doc-section-title">70歳未満の自己負担限度額（月額）</div>
+      <table class="doc-table">
+        <thead><tr><th>所得区分</th><th>計算式</th></tr></thead>
+        <tbody>
+          <tr><td>区分ア：標報83万円以上</td><td>252,600円＋（医療費－842,000円）×1%</td></tr>
+          <tr><td>区分イ：標報53〜79万円</td><td>167,400円＋（医療費－558,000円）×1%</td></tr>
+          <tr><td>区分ウ：標報28〜50万円</td><td>80,100円＋（医療費－267,000円）×1%</td></tr>
+          <tr><td>区分エ：標報26万円以下</td><td>57,600円</td></tr>
+          <tr><td>区分オ：低所得者</td><td>35,400円</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">多数該当（過去12か月以内に3回以上）の場合、4回目以降の限度額が下がる（区分ウの場合：44,400円）。</div>
+    `
+  },
+  {
+    s: "労基",
+    title: "割増賃金率の整理",
+    body: `
+      <div class="doc-section-title">割増率の組み合わせ</div>
+      <table class="doc-table">
+        <thead><tr><th>労働の種類</th><th>割増率</th></tr></thead>
+        <tbody>
+          <tr><td>時間外労働（月60時間以下）</td><td>25%以上</td></tr>
+          <tr><td>時間外労働（月60時間超）</td><td>50%以上</td></tr>
+          <tr><td>休日労働</td><td>35%以上</td></tr>
+          <tr><td>深夜労働（22時〜翌5時）</td><td>25%以上</td></tr>
+          <tr><td>時間外＋深夜</td><td>50%以上（25+25）</td></tr>
+          <tr><td>時間外（60時間超）＋深夜</td><td>75%以上（50+25）</td></tr>
+          <tr><td>休日＋深夜</td><td>60%以上（35+25）</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">休日労働と時間外労働は同時には成立しない（休日は労働日ではないため）。</div>
+    `
+  },
+  {
+    s: "国年",
+    title: "保険料免除制度",
+    body: `
+      <div class="doc-section-title">免除の種類と老齢基礎年金への反映</div>
+      <table class="doc-table">
+        <thead><tr><th>免除種別</th><th>反映率（H21.4以降）</th><th>反映率（H21.3以前）</th></tr></thead>
+        <tbody>
+          <tr><td>全額免除</td><td>1/2</td><td>1/3</td></tr>
+          <tr><td>4分の3免除（4分の1納付）</td><td>5/8</td><td>1/2</td></tr>
+          <tr><td>半額免除（半額納付）</td><td>6/8（3/4）</td><td>2/3</td></tr>
+          <tr><td>4分の1免除（4分の3納付）</td><td>7/8</td><td>5/6</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-section-title">学生納付特例・納付猶予</div>
+      <ul class="doc-list">
+        <li>受給資格期間には算入されるが、年金額には反映されない</li>
+        <li>10年以内であれば追納可能（追納すれば反映される）</li>
+        <li>学生納付特例：本人所得128万円＋扶養親族控除額以下</li>
+        <li>納付猶予：50歳未満、本人と配偶者の所得</li>
+      </ul>
+    `
+  },
+  {
+    s: "雇用",
+    title: "育児休業給付金の支給率",
+    body: `
+      <div class="doc-section-title">支給率と上限</div>
+      <table class="doc-table">
+        <thead><tr><th>期間</th><th>支給率</th></tr></thead>
+        <tbody>
+          <tr><td>育児休業開始から180日</td><td>休業開始時賃金日額×30日×67%</td></tr>
+          <tr><td>181日目以降</td><td>休業開始時賃金日額×30日×50%</td></tr>
+          <tr><td>出生時育児休業給付金（産後パパ育休）</td><td>賃金日額×休業日数×67%</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">産後パパ育休：子の出生後8週間以内に4週間（28日）まで取得可能。2回まで分割可。</div>
+      <div class="doc-section-title">受給要件</div>
+      <ul class="doc-list">
+        <li>育児休業開始日前2年間に、賃金支払基礎日数11日以上の月が12か月以上</li>
+        <li>休業期間中の賃金が休業前の80%未満</li>
+      </ul>
+    `
+  },
+  {
+    s: "厚年",
+    title: "在職老齢年金（令和6年度）",
+    body: `
+      <div class="doc-section-title">支給停止の仕組み</div>
+      <div class="doc-formula">
+        <strong>基本月額 ＋ 総報酬月額相当額 ＞ 50万円</strong> の場合に支給停止<br>
+        支給停止額 ＝ （基本月額＋総報酬月額相当額－50万円）× 1/2
+      </div>
+      <div class="doc-section-title">用語の定義</div>
+      <ul class="doc-list">
+        <li>基本月額：老齢厚生年金の額（加給年金は除く）÷ 12</li>
+        <li>総報酬月額相当額：その月の標準報酬月額＋（直近1年の標準賞与額の合計÷12）</li>
+        <li>支給停止調整額：50万円（令和6年度）</li>
+      </ul>
+      <div class="doc-note">60歳台前半・後半いずれも支給停止調整額は50万円で一本化（令和4年4月〜）。</div>
+    `
+  }
+];
+
+// ============================================================
+// 状態管理
+// ============================================================
+const STORAGE = "sharoushi_docs_memos_v1";
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return {
+    mode: "doc",
+    filter: "all",
+    memos: [],          // [{id, cat, subject, title, body, created, updated}]
+    expanded: {}        // {docId: true} で展開状態
+  };
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE, JSON.stringify(state)); } catch (e) {}
+}
+
+// ============================================================
+// フィルター
+// ============================================================
+const DOC_FILTERS = ["all", "労基", "安衛", "労災", "雇用", "徴収", "健保", "国年", "厚年", "社一", "労一", "横断"];
+const MEMO_FILTERS = ["all", "改正", "弱点", "間違え", "横断", "ゴロ", "その他"];
+const MEMO_LABELS = { "all": "全部", "改正": "📝改正", "弱点": "⚠️弱点", "間違え": "❌間違え", "横断": "🔀横断", "ゴロ": "💡ゴロ", "その他": "📌その他" };
+
+function setMode(mode) {
+  state.mode = mode;
+  state.filter = "all";
+  saveState();
+  render();
+}
+
+function setFilter(f) {
+  state.filter = f;
+  saveState();
+  render();
+}
+
+function toggleDoc(idx) {
+  if (state.expanded[idx]) delete state.expanded[idx];
+  else state.expanded[idx] = true;
+  saveState();
+  render();
+}
+
+// ============================================================
+// 資料モード
+// ============================================================
+function filteredDocs() {
+  if (state.filter === "all") return DOCS.map((d, i) => ({ ...d, idx: i }));
+  return DOCS.map((d, i) => ({ ...d, idx: i })).filter(d => d.s === state.filter);
+}
+
+function renderDocs() {
+  const docs = filteredDocs();
+  if (docs.length === 0) return `<div class="empty">該当する資料がありません</div>`;
+
+  return docs.map(d => `
+    <div class="doc-card ${state.expanded[d.idx] ? '' : 'collapsed'}">
+      <div class="doc-header" onclick="toggleDoc(${d.idx})">
+        <div>
+          <div class="doc-title">${escapeHtml(d.title)}</div>
+          <div class="doc-meta">${escapeHtml(d.s)}</div>
+        </div>
+        <div class="doc-toggle">${state.expanded[d.idx] ? '▼' : '▶'}</div>
+      </div>
+      <div class="doc-body">${d.body}</div>
+    </div>
+  `).join("");
+}
+
+// ============================================================
+// メモモード
+// ============================================================
+let editingMemoId = null;
+
+function filteredMemos() {
+  let memos = [...state.memos];
+  if (state.filter !== "all") {
+    memos = memos.filter(m => m.cat === state.filter);
+  }
+  // 新しい順
+  memos.sort((a, b) => (b.updated || b.created) - (a.updated || a.created));
+  return memos;
+}
+
+function renderMemos() {
+  const memos = filteredMemos();
+
+  let html = `<button class="add-btn" onclick="openModal()">＋ メモを追加</button>`;
+
+  if (state.memos.length > 0) {
+    html += `
+      <div class="export-bar">
+        <button onclick="exportMemos()">📤 エクスポート</button>
+        <button onclick="importMemos()">📥 インポート</button>
+      </div>
+    `;
+  }
+
+  if (memos.length === 0) {
+    html += `
+      <div class="empty">
+        ${state.filter === "all" ? "メモがまだありません" : "このカテゴリのメモはありません"}
+        <div class="empty-help">「＋ メモを追加」から記録を始めましょう</div>
+      </div>
+    `;
+    return html;
+  }
+
+  html += memos.map(m => `
+    <div class="memo-card" data-cat="${escapeHtml(m.cat)}">
+      <div class="memo-header">
+        <span class="memo-cat-tag" data-cat="${escapeHtml(m.cat)}">${getCatLabel(m.cat)}</span>
+        ${m.subject ? `<span class="memo-subject-tag">${escapeHtml(m.subject)}</span>` : ""}
+        <span class="memo-date">${formatDate(m.updated || m.created)}</span>
+      </div>
+      <div class="memo-title">${escapeHtml(m.title || "(無題)")}</div>
+      <div class="memo-body">${escapeHtml(m.body)}</div>
+      <div class="memo-actions">
+        <button onclick="editMemo('${m.id}')">編集</button>
+        <button class="danger" onclick="deleteMemo('${m.id}')">削除</button>
+      </div>
+    </div>
+  `).join("");
+
+  return html;
+}
+
+function getCatLabel(cat) {
+  return ({
+    "改正": "📝 法改正",
+    "弱点": "⚠️ 弱点",
+    "間違え": "❌ 間違え",
+    "横断": "🔀 横断",
+    "ゴロ": "💡 ゴロ",
+    "その他": "📌 その他"
+  })[cat] || cat;
+}
+
+function formatDate(ts) {
+  if (!ts) return "";
+  const d = new Date(ts);
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${m}/${day}`;
+}
+
+function openModal(memoId) {
+  editingMemoId = memoId || null;
+  if (memoId) {
+    const memo = state.memos.find(m => m.id === memoId);
+    if (memo) {
+      document.getElementById("modalTitle").textContent = "メモを編集";
+      document.getElementById("memoCat").value = memo.cat;
+      document.getElementById("memoSubject").value = memo.subject || "";
+      document.getElementById("memoTitle").value = memo.title || "";
+      document.getElementById("memoBody").value = memo.body || "";
+    }
+  } else {
+    document.getElementById("modalTitle").textContent = "メモを追加";
+    document.getElementById("memoCat").value = state.filter !== "all" ? state.filter : "弱点";
+    document.getElementById("memoSubject").value = "";
+    document.getElementById("memoTitle").value = "";
+    document.getElementById("memoBody").value = "";
+  }
+  document.getElementById("modalBg").classList.add("active");
+}
+
+function closeModal() {
+  document.getElementById("modalBg").classList.remove("active");
+  editingMemoId = null;
+}
+
+function saveMemo() {
+  const cat = document.getElementById("memoCat").value;
+  const subject = document.getElementById("memoSubject").value;
+  const title = document.getElementById("memoTitle").value.trim();
+  const body = document.getElementById("memoBody").value.trim();
+
+  if (!title && !body) {
+    alert("タイトルか本文のどちらかは入力してください");
+    return;
+  }
+
+  const now = Date.now();
+  if (editingMemoId) {
+    const memo = state.memos.find(m => m.id === editingMemoId);
+    if (memo) {
+      memo.cat = cat;
+      memo.subject = subject;
+      memo.title = title;
+      memo.body = body;
+      memo.updated = now;
+    }
+  } else {
+    state.memos.push({
+      id: "m_" + now + "_" + Math.random().toString(36).slice(2, 7),
+      cat, subject, title, body,
+      created: now, updated: now
+    });
+  }
+  saveState();
+  closeModal();
+  render();
+}
+
+function editMemo(id) {
+  openModal(id);
+}
+
+function deleteMemo(id) {
+  if (!confirm("このメモを削除しますか？")) return;
+  state.memos = state.memos.filter(m => m.id !== id);
+  saveState();
+  render();
+}
+
+function exportMemos() {
+  const data = JSON.stringify(state.memos, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `sharoushi_memos_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importMemos() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,application/json";
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error("不正な形式");
+        if (!confirm(`${data.length}件のメモをインポートします（既存のメモは保持されます）。よろしいですか？`)) return;
+        // 既存IDと重複しないものだけ追加
+        const existingIds = new Set(state.memos.map(m => m.id));
+        const newMemos = data.filter(m => !existingIds.has(m.id));
+        state.memos.push(...newMemos);
+        saveState();
+        render();
+        alert(`${newMemos.length}件のメモをインポートしました`);
+      } catch (err) {
+        alert("インポートに失敗しました：" + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ============================================================
+// レンダリング
+// ============================================================
+function render() {
+  // モードタブ
+  document.querySelectorAll(".mode-tab").forEach(b => b.classList.remove("active"));
+  document.getElementById("mode" + state.mode[0].toUpperCase() + state.mode.slice(1)).classList.add("active");
+
+  // フィルターチップ
+  const fb = document.getElementById("filterBar");
+  if (state.mode === "doc") {
+    const counts = {};
+    DOCS.forEach(d => { counts[d.s] = (counts[d.s] || 0) + 1; });
+    counts["all"] = DOCS.length;
+    fb.innerHTML = DOC_FILTERS.map(s => `
+      <button class="filter-chip ${state.filter === s ? 'active' : ''}" onclick="setFilter('${s}')">
+        ${s === "all" ? "全部" : s}<span class="count">${counts[s] || 0}</span>
+      </button>
+    `).join("");
+  } else {
+    const counts = {};
+    state.memos.forEach(m => { counts[m.cat] = (counts[m.cat] || 0) + 1; });
+    counts["all"] = state.memos.length;
+    fb.innerHTML = MEMO_FILTERS.map(c => `
+      <button class="filter-chip ${state.filter === c ? 'active' : ''}" onclick="setFilter('${c}')">
+        ${MEMO_LABELS[c]}<span class="count">${counts[c] || 0}</span>
+      </button>
+    `).join("");
+  }
+
+  // 統計
+  document.getElementById("stats").textContent =
+    state.mode === "doc"
+      ? `資料 ${DOCS.length}件`
+      : `メモ ${state.memos.length}件`;
+
+  // メイン
+  const main = document.getElementById("main");
+  main.innerHTML = state.mode === "doc" ? renderDocs() : renderMemos();
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// モーダル背景クリックで閉じる
+document.getElementById("modalBg").addEventListener("click", (e) => {
+  if (e.target.id === "modalBg") closeModal();
+});
+
+render();
+</script>
+
+</body>
+</html>
