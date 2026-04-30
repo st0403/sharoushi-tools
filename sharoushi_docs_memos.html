@@ -769,6 +769,79 @@ const DOCS = [
     `
   },
   {
+    s: "国年",
+    title: "マクロ経済スライド（完全ガイド）",
+    body: `
+      <div class="doc-section-title">基本概念：何のための制度？</div>
+      <p>少子高齢化で年金財政が苦しくなる中、年金給付額を<strong>「物価・賃金の伸び」より少し抑える</strong>ことで、長期的な財政均衡を保つ仕組み。平成16年改正で導入。</p>
+
+      <div class="doc-section-title">通常の改定と何が違うか</div>
+      <table class="doc-table">
+        <thead><tr><th></th><th>通常</th><th>マクロ経済スライド適用時</th></tr></thead>
+        <tbody>
+          <tr><td>新規裁定者（67歳以下）</td><td>賃金変動率で改定</td><td>賃金変動率 − スライド調整率</td></tr>
+          <tr><td>既裁定者（68歳以上）</td><td>物価変動率で改定</td><td>物価変動率 − スライド調整率</td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-section-title">スライド調整率の中身</div>
+      <div class="doc-formula">
+        <strong>スライド調整率</strong><br>
+        ＝ 公的年金被保険者数の変動率（直近3年平均、マイナスで作用）<br>
+        　＋ 平均余命の伸び率（一律 −0.3%）
+      </div>
+      <div class="doc-note">合計でおおよそ毎年 <strong>−0.9% 程度</strong>が年金額の伸びから差し引かれる（年により変動）。</div>
+
+      <div class="doc-section-title">最重要：3つのケース分け</div>
+
+      <div class="doc-section-title" style="font-size: 12px; color: #1d9e75;">ケース①：物価・賃金が大きく上昇</div>
+      <div class="doc-formula">
+        例：賃金変動 +2.0%、調整率 −0.9%<br>
+        → <strong>年金改定 +1.1%</strong>（フル適用）
+      </div>
+      <p>変動率がプラスで調整率を上回る場合 → スライド調整率がフルに適用される。</p>
+
+      <div class="doc-section-title" style="font-size: 12px; color: #EF9F27;">ケース②：物価・賃金が小幅上昇（調整率を下回る）</div>
+      <div class="doc-formula">
+        例：賃金変動 +0.5%、調整率 −0.9%<br>
+        → 計算上は −0.4% だが…<br>
+        → <strong>年金改定 0%（据置き）</strong><br>
+        → 未調整分 −0.4% は <strong>キャリーオーバー</strong>
+      </div>
+      <p>変動率が調整率より小さい場合 → 年金額は名目で下げず据置き。残った調整分（−0.4%）は翌年以降に持ち越し。</p>
+
+      <div class="doc-section-title" style="font-size: 12px; color: #E24B4A;">ケース③：物価・賃金が下落</div>
+      <div class="doc-formula">
+        例：賃金変動 −0.5%<br>
+        → スライド調整率は<strong>適用しない</strong><br>
+        → <strong>年金改定 −0.5%</strong>（賃金変動どおり）
+      </div>
+      <p>変動率がマイナスの場合 → スライド調整率は発動せず、変動率どおりに改定（マイナス）。未調整分はキャリーオーバー。</p>
+
+      <div class="doc-section-title">キャリーオーバー（持ち越し）の仕組み</div>
+      <p>平成30年4月から導入。ケース②③で使えなかったスライド調整率を<strong>翌年度以降に繰り越して、賃金・物価が上がった年にまとめて差し引く</strong>。</p>
+      <div class="doc-note">これにより、デフレ下でも長期的にはマクロ経済スライドの効果が累積して反映される。</div>
+
+      <div class="doc-section-title">新規裁定と既裁定の使い分け</div>
+      <table class="doc-table">
+        <thead><tr><th>区分</th><th>原則</th><th>例外</th></tr></thead>
+        <tbody>
+          <tr><td>新規裁定者（67歳到達年度まで）</td><td>賃金変動率で改定</td><td>賃金 &lt; 物価 のとき物価変動率</td></tr>
+          <tr><td>既裁定者（68歳以上）</td><td>物価変動率で改定</td><td>賃金 &lt; 物価 のとき賃金変動率</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">令和3年4月から「賃金 &lt; 物価」のとき、両者とも<strong>低い方（賃金）</strong>に揃える仕組みに改正。</div>
+
+      <div class="doc-section-title">記憶のポイント</div>
+      <ul class="doc-list">
+        <li>「景気が良い年だけフル適用、悪い年は持ち越し」が基本構造</li>
+        <li>名目下限措置：年金額を名目で下げない（ケース②）</li>
+        <li>賃金 &lt; 物価 のとき → 低い方（賃金）に揃える（令和3年〜）</li>
+        <li>調整率 = 被保険者数減少率 + 平均余命の伸び（−0.3%）</li>
+      </ul>
+    `
+  },
+  {
     s: "厚年",
     title: "在職老齢年金（令和6年度）",
     body: `
