@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>社労士 ○×問題集</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: contain; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    background: #f5f3ee;
+    color: #2c2c2a;
+    line-height: 1.5;
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    background: #f5f3ee;
+    z-index: 10;
+    padding: 12px 14px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .stats { font-size: 11px; color: #5f5e5a; font-weight: 400; }
+  .mode-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+  .mode-tab {
+    flex: 1; padding: 8px 4px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 6px;
+    font-size: 13px; cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+    text-align: center;
+  }
+  .mode-tab.active {
+    background: #2c2c2a; color: white; border-color: #2c2c2a;
+  }
+  .filter-bar {
+    display: flex; gap: 6px;
+    overflow-x: auto;
+    padding: 8px 0 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 14px;
+    font-size: 12px; cursor: pointer;
+    white-space: nowrap;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .filter-chip.active {
+    background: #2c2c2a; color: white; border-color: #2c2c2a;
+  }
+  .filter-chip .count {
+    font-size: 10px; opacity: 0.7; margin-left: 3px;
+  }
+
+  main { padding: 12px 14px; }
+
+  /* === 演習モード === */
+  .quiz-area {
+    padding-top: 8px;
+  }
+  .quiz-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #5f5e5a;
+  }
+  .quiz-bar {
+    height: 4px;
+    background: #e8e6df;
+    border-radius: 2px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .quiz-fill { height: 100%; background: #1d9e75; transition: width 0.3s; }
+  .quiz-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 18px 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .quiz-meta {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    font-size: 11px;
+  }
+  .quiz-tag {
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #f1efe8;
+    color: #5f5e5a;
+  }
+  .quiz-tag.subject {
+    background: #CECBF6;
+    color: #26215C;
+  }
+  .quiz-tag.topic {
+    background: #d3d1c7;
+    color: #2c2c2a;
+  }
+  .quiz-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #2c2c2a;
+    margin-bottom: 16px;
+  }
+  .quiz-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  .ox-btn {
+    flex: 1;
+    padding: 18px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 8px;
+    font-size: 22px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .ox-btn:active { background: #f1efe8; }
+  .ox-btn.maru { color: #1d9e75; }
+  .ox-btn.batsu { color: #a32d2d; }
+  .ox-btn.disabled { pointer-events: none; opacity: 0.5; }
+  .ox-btn.selected.correct { background: #EAF3DE; border-color: #97C459; }
+  .ox-btn.selected.wrong { background: #FCEBEB; border-color: #F09595; }
+
+  .answer-box {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f1efe8;
+  }
+  .answer-box.correct {
+    background: #EAF3DE;
+  }
+  .answer-box.wrong {
+    background: #FCEBEB;
+  }
+  .answer-result {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .answer-result.correct { color: #27500A; }
+  .answer-result.wrong { color: #791F1F; }
+  .answer-correct-mark {
+    font-size: 16px;
+    margin-right: 6px;
+  }
+  .answer-explain {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #444441;
+    white-space: pre-wrap;
+  }
+  .quiz-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .quiz-actions button {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .quiz-actions button.primary {
+    background: #2c2c2a; color: white; border-color: #2c2c2a;
+  }
+  .star-quiz {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #d3d1c7;
+    padding: 4px;
+  }
+  .star-quiz.starred { color: #EF9F27; }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888780;
+    font-size: 13px;
+  }
+  .empty-help { margin-top: 8px; font-size: 11px; }
+
+  .session-result {
+    text-align: center;
+    padding: 30px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .session-score {
+    font-size: 36px;
+    font-weight: 500;
+    color: #1d9e75;
+    margin: 12px 0;
+  }
+  .session-rate {
+    font-size: 13px;
+    color: #5f5e5a;
+  }
+
+  /* === 一覧モード === */
+  .list-controls {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .list-controls button {
+    flex: 1;
+    padding: 10px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .list-controls button.primary {
+    background: #1d9e75; color: white; border-color: #1d9e75; font-weight: 500;
+  }
+  .list-item {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-left: 4px solid #d3d1c7;
+  }
+  .list-item.starred { border-left-color: #EF9F27; }
+  .list-item-meta {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    font-size: 11px;
+  }
+  .list-item-meta .ans-mark {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .list-item-meta .ans-mark.maru { background: #EAF3DE; color: #27500A; }
+  .list-item-meta .ans-mark.batsu { background: #FCEBEB; color: #791F1F; }
+  .list-item-question {
+    font-size: 13px;
+    color: #2c2c2a;
+    line-height: 1.6;
+    margin-bottom: 6px;
+  }
+  .list-item-explain {
+    font-size: 11px;
+    color: #888780;
+    line-height: 1.6;
+    padding: 6px 8px;
+    background: #f1efe8;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    margin-top: 4px;
+  }
+  .list-item-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+  .list-item-actions button {
+    background: none;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #5f5e5a;
+    font-family: inherit;
+  }
+  .list-item-actions button.danger { color: #a32d2d; }
+
+  /* === モーダル === */
+  .modal-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-bg.active { display: flex; }
+  .modal {
+    background: #f5f3ee;
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+    border-radius: 12px 12px 0 0;
+    padding: 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal h2 { font-size: 16px; font-weight: 500; margin-bottom: 12px; }
+  .modal label {
+    display: block;
+    font-size: 12px;
+    color: #5f5e5a;
+    margin: 10px 0 4px;
+  }
+  .modal input, .modal textarea, .modal select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+    color: #2c2c2a;
+  }
+  .modal textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .ans-toggle {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .ans-toggle label {
+    flex: 1;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    background: white;
+  }
+  .ans-toggle input[type="radio"] { display: none; }
+  .ans-toggle input[type="radio"]:checked + span {
+    display: block;
+  }
+  .ans-toggle label:has(input:checked) {
+    background: #2c2c2a; color: white; border-color: #2c2c2a;
+  }
+  .modal-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .modal-buttons button {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+  .modal-buttons button.primary {
+    background: #1d9e75; color: white; border-color: #1d9e75; font-weight: 500;
+  }
+
+  .export-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .export-bar button {
+    flex: 1;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #2c2c2a;
+    font-family: inherit;
+  }
+
+  .session-config {
+    background: white;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .session-config h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .session-config label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .session-config input[type="number"] {
+    width: 60px;
+    padding: 4px 8px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 4px;
+    font-size: 13px;
+    background: white;
+    color: #2c2c2a;
+  }
+  .session-start {
+    width: 100%;
+    padding: 14px;
+    background: #1d9e75;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a18; color: #e8e6df; }
+    header { background: #1a1a18; border-color: rgba(255,255,255,0.08); }
+    .mode-tab, .filter-chip, .quiz-card, .ox-btn, .answer-box,
+    .quiz-actions button, .modal input, .modal textarea, .modal select,
+    .modal-buttons button, .export-bar button, .list-item, .list-controls button,
+    .list-item-actions button, .session-config, .session-config input,
+    .ans-toggle label {
+      background: #2c2c2a; color: #e8e6df; border-color: rgba(255,255,255,0.1);
+    }
+    .answer-box { background: #3a3a37; }
+    .answer-box.correct { background: #173404; }
+    .answer-box.wrong { background: #501313; }
+    .answer-explain { color: #c2c0b6; }
+    .list-item-explain { background: #3a3a37; color: #b4b2a9; }
+    .ox-btn.selected.correct { background: #173404; border-color: #639922; }
+    .ox-btn.selected.wrong { background: #501313; border-color: #A32D2D; }
+    .quiz-tag { background: #3a3a37; color: #b4b2a9; }
+    .quiz-tag.subject { background: #3C3489; color: #CECBF6; }
+    .quiz-tag.topic { background: #3a3a37; color: #b4b2a9; }
+    .stats, .quiz-progress, .empty, .session-rate, .list-item-meta { color: #b4b2a9; }
+    .list-item-meta .ans-mark.maru { background: #173404; color: #C0DD97; }
+    .list-item-meta .ans-mark.batsu { background: #501313; color: #F7C1C1; }
+    .modal { background: #1a1a18; }
+    .session-result { background: #2c2c2a; border-color: rgba(255,255,255,0.1); }
+    .mode-tab.active, .filter-chip.active {
+      background: #e8e6df; color: #1a1a18; border-color: #e8e6df;
+    }
+    .quiz-actions button.primary, .list-controls button.primary,
+    .modal-buttons button.primary {
+      background: #e8e6df; color: #1a1a18; border-color: #e8e6df;
+    }
+    .ans-toggle label:has(input:checked) {
+      background: #e8e6df; color: #1a1a18; border-color: #e8e6df;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    <span>✓✗ ○×問題集</span>
+    <span class="stats" id="stats"></span>
+  </h1>
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="modeQuiz" onclick="setMode('quiz')">演習</button>
+    <button class="mode-tab" id="modeList" onclick="setMode('list')">一覧</button>
+  </div>
+  <div class="filter-bar" id="filterBar"></div>
+</header>
+
+<main id="main"></main>
+
+<!-- 問題追加・編集モーダル -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2 id="modalTitle">問題を追加</h2>
+    <label>科目</label>
+    <select id="qSubject">
+      <option value="労基">労基</option>
+      <option value="安衛">安衛</option>
+      <option value="労災">労災</option>
+      <option value="雇用">雇用</option>
+      <option value="徴収">徴収</option>
+      <option value="健保">健保</option>
+      <option value="国年">国年</option>
+      <option value="厚年">厚年</option>
+      <option value="社一">社一</option>
+      <option value="労一">労一</option>
+      <option value="横断">横断</option>
+    </select>
+    <label>トピック（任意）</label>
+    <input type="text" id="qTopic" placeholder="例：マクロ経済スライド">
+    <label>問題文</label>
+    <textarea id="qQuestion" placeholder="例：マクロ経済スライドのスライド調整率は..."></textarea>
+    <label>正解</label>
+    <div class="ans-toggle">
+      <label><input type="radio" name="qAnswer" value="○" checked><span>○</span></label>
+      <label><input type="radio" name="qAnswer" value="×"><span>×</span></label>
+    </div>
+    <label>解説</label>
+    <textarea id="qExplain" placeholder="正誤の理由・関連条文・補足など"></textarea>
+    <div class="modal-buttons">
+      <button onclick="closeModal()">キャンセル</button>
+      <button class="primary" onclick="saveQuestion()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 初期問題データ：マクロ経済スライド15問＋他テーマ少々
+// ============================================================
+const SEED_QUESTIONS = [
+  // ===== マクロ経済スライド（国年・厚年共通） =====
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "マクロ経済スライドは、平成16年改正で導入された制度であり、年金財政の長期的な均衡を保つため、年金額の改定率を物価・賃金の変動率より一定割合抑制する仕組みである。",
+    a: "○",
+    ex: "正しい。平成16年改正により、少子高齢化に対応した年金財政の長期均衡を図るために導入された。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "マクロ経済スライドのスライド調整率は、公的年金被保険者数の変動率に、平均余命の伸びを勘案した一定率（−0.3%）を加えたものである。",
+    a: "○",
+    ex: "正しい。スライド調整率＝公的年金被保険者数の変動率（直近3年平均）＋平均余命の伸び（−0.3%）。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "物価変動率や賃金変動率がマイナスの場合でも、マクロ経済スライドによるスライド調整率は通常どおり適用される。",
+    a: "×",
+    ex: "誤り。物価・賃金がマイナスの場合、スライド調整率は適用されない。年金額は変動率どおり減額される（マイナス改定）。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "物価・賃金の変動率がプラスでもスライド調整率を下回る場合、年金額を名目で下げないよう据え置きとされ、未調整分は翌年度以降に持ち越される（キャリーオーバー）。",
+    a: "○",
+    ex: "正しい。平成30年4月から導入されたキャリーオーバー制度。デフレ期に未調整となった分を後年に繰り越す仕組み。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "マクロ経済スライドが適用される結果、年金額が前年度の年金額を下回ることもありうる。",
+    a: "×",
+    ex: "誤り。名目下限措置により、マクロ経済スライドの適用によって年金額を名目で下げることはない。ただし物価・賃金の下落自体による減額はあり得る。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "新規裁定者（67歳到達年度まで）の年金額は、原則として物価変動率を用いて改定される。",
+    a: "×",
+    ex: "誤り。新規裁定者は原則として「賃金変動率」で改定される。既裁定者（68歳以上）が「物価変動率」。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "既裁定者（68歳に達する日の属する年度以後）の年金額は、原則として物価変動率を用いて改定される。",
+    a: "○",
+    ex: "正しい。既裁定者は物価変動率による改定が原則。新規裁定者は賃金変動率。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "賃金変動率が物価変動率を下回る場合、新規裁定者・既裁定者ともに「賃金変動率」（低い方）で改定する。",
+    a: "○",
+    ex: "正しい。令和3年4月から、賃金＜物価のときは新規裁定・既裁定とも低い方（賃金）に揃える仕組みとなった。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "キャリーオーバー制度により、過去に持ち越されたスライド調整率は、賃金・物価が大きく上昇した年にまとめて差し引かれる。",
+    a: "○",
+    ex: "正しい。デフレ期に発動できなかったスライド調整率を、景気回復期にまとめて反映する仕組み。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "賃金変動率が+0.5%、スライド調整率が-0.9%の場合、新規裁定者の年金額は-0.4%改定される。",
+    a: "×",
+    ex: "誤り。名目下限措置により、年金額は据え置き（0%）となる。差し引きできなかった-0.4%はキャリーオーバーされる。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "賃金変動率が+2.0%、スライド調整率が-0.9%の場合、新規裁定者の年金額は+1.1%改定される。",
+    a: "○",
+    ex: "正しい。プラス変動が調整率を上回る場合は、スライド調整率がフルに適用される。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "賃金変動率が-0.5%の場合、スライド調整率は適用されないが、未調整分はキャリーオーバーされる。",
+    a: "○",
+    ex: "正しい。マイナス変動時は名目下限を超えてさらに下げないため調整率は適用されず、その分は持ち越される。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "マクロ経済スライドは、老齢基礎年金には適用されるが、障害基礎年金や遺族基礎年金には適用されない。",
+    a: "×",
+    ex: "誤り。マクロ経済スライドは老齢・障害・遺族すべての基礎年金、および厚生年金にも適用される。"
+  },
+  {
+    s: "厚年", t: "マクロ経済スライド",
+    q: "マクロ経済スライドは、厚生年金保険の老齢厚生年金にも適用される。",
+    a: "○",
+    ex: "正しい。基礎年金・厚生年金ともに適用される。報酬比例部分の改定にも反映される。"
+  },
+  {
+    s: "国年", t: "マクロ経済スライド",
+    q: "マクロ経済スライドの財政均衡期間は、おおむね100年とされている。",
+    a: "○",
+    ex: "正しい。財政検証は5年ごとに行われ、財政均衡期間（おおむね100年）を見通して給付水準調整の見通しが示される。"
+  },
+
+  // ===== 他テーマ（拡張のサンプル） =====
+  {
+    s: "労基", t: "労働時間",
+    q: "労働基準法における法定労働時間は、1週40時間、1日8時間が原則である。",
+    a: "○",
+    ex: "正しい。労基法32条。例外として特例措置対象事業場（10人未満の商業・サービス業等）は週44時間。"
+  },
+  {
+    s: "雇用", t: "基本手当",
+    q: "雇用保険の基本手当を受給するためには、原則として離職日以前2年間に被保険者期間が通算して6か月以上あることが必要である。",
+    a: "×",
+    ex: "誤り。一般受給資格者は「2年間に通算12か月以上」が必要。「6か月以上」は特定受給資格者・特定理由離職者の要件（2年間ではなく1年間）。"
+  },
+  {
+    s: "健保", t: "傷病手当金",
+    q: "健康保険の傷病手当金の支給期間は、支給開始日から起算して通算1年6か月である。",
+    a: "○",
+    ex: "正しい。令和4年1月の改正で「通算」となった（それ以前は暦日で1年6か月）。"
+  },
+  {
+    s: "労災", t: "休業給付",
+    q: "労災保険の休業補償給付は、休業の初日から給付基礎日額の60%相当額が支給される。",
+    a: "×",
+    ex: "誤り。休業補償給付は休業4日目から支給される（最初の3日間は事業主が労基法上の休業補償を行う）。給付率60%は正しい。"
+  },
+  {
+    s: "厚年", t: "在職老齢年金",
+    q: "在職老齢年金の支給停止調整額は、令和6年度において50万円である。",
+    a: "○",
+    ex: "正しい。基本月額＋総報酬月額相当額＞50万円のとき、超過分の1/2が支給停止される。"
+  }
+];
+
+// ============================================================
+// 状態管理
+// ============================================================
+const STORAGE = "sharoushi_oxquiz_v1";
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  // 初回起動：シードデータを取り込む
+  return {
+    mode: "quiz",
+    filter: "all",
+    questions: SEED_QUESTIONS.map((q, i) => ({
+      id: "seed_" + i,
+      ...q,
+      starred: false,
+      correctCount: 0,
+      wrongCount: 0
+    })),
+    session: null,        // {ids, idx, answered, lastChoice, score, configFilter, configCount}
+    initialized: true
+  };
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE, JSON.stringify(state)); } catch (e) {}
+}
+
+// ============================================================
+// フィルター
+// ============================================================
+const FILTERS = ["all", "労基", "安衛", "労災", "雇用", "徴収", "健保", "国年", "厚年", "社一", "労一", "横断", "★"];
+
+function setMode(mode) {
+  state.mode = mode;
+  if (mode === "quiz") {
+    state.session = null;
+  }
+  saveState();
+  render();
+}
+
+function setFilter(f) {
+  state.filter = f;
+  if (state.mode === "quiz") state.session = null;
+  saveState();
+  render();
+}
+
+function questionsForFilter(filter) {
+  if (filter === "all") return state.questions;
+  if (filter === "★") return state.questions.filter(q => q.starred);
+  return state.questions.filter(q => q.s === filter);
+}
+
+// ============================================================
+// 演習モード（セッション）
+// ============================================================
+function startSession() {
+  const count = parseInt(document.getElementById("sessionCount").value) || 10;
+  const onlyStarred = document.getElementById("sessionStarred").checked;
+  const onlyWrong = document.getElementById("sessionWrong").checked;
+
+  let pool = questionsForFilter(state.filter);
+  if (onlyStarred) pool = pool.filter(q => q.starred);
+  if (onlyWrong) pool = pool.filter(q => q.wrongCount > q.correctCount);
+
+  if (pool.length === 0) {
+    alert("該当する問題がありません");
+    return;
+  }
+
+  // シャッフルして先頭count問
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+
+  state.session = {
+    ids: selected.map(q => q.id),
+    idx: 0,
+    answered: false,
+    lastChoice: null,
+    score: 0
+  };
+  saveState();
+  render();
+}
+
+function answerQuestion(choice) {
+  const ses = state.session;
+  if (!ses || ses.answered) return;
+
+  const qid = ses.ids[ses.idx];
+  const q = state.questions.find(x => x.id === qid);
+  if (!q) return;
+
+  const correct = (choice === q.a);
+  ses.answered = true;
+  ses.lastChoice = choice;
+  if (correct) {
+    ses.score++;
+    q.correctCount = (q.correctCount || 0) + 1;
+  } else {
+    q.wrongCount = (q.wrongCount || 0) + 1;
+    q.starred = true;  // 間違えたら自動で苦手登録
+  }
+  saveState();
+  render();
+}
+
+function nextQuestion() {
+  const ses = state.session;
+  if (!ses) return;
+  if (ses.idx + 1 >= ses.ids.length) {
+    // セッション終了
+    ses.idx = ses.ids.length;
+    saveState();
+    render();
+    return;
+  }
+  ses.idx++;
+  ses.answered = false;
+  ses.lastChoice = null;
+  saveState();
+  render();
+}
+
+function endSession() {
+  state.session = null;
+  saveState();
+  render();
+}
+
+function toggleStarInQuiz() {
+  const ses = state.session;
+  if (!ses) return;
+  const qid = ses.ids[ses.idx];
+  const q = state.questions.find(x => x.id === qid);
+  if (q) {
+    q.starred = !q.starred;
+    saveState();
+    render();
+  }
+}
+
+function renderQuiz() {
+  // セッション中でない → 設定画面
+  if (!state.session) {
+    const pool = questionsForFilter(state.filter);
+    const starredCount = pool.filter(q => q.starred).length;
+    const wrongCount = pool.filter(q => q.wrongCount > q.correctCount).length;
+
+    return `
+      <div class="session-config">
+        <h3>演習設定</h3>
+        <label>
+          問題数：
+          <input type="number" id="sessionCount" value="10" min="1" max="100">問
+        </label>
+        <label>
+          <input type="checkbox" id="sessionStarred" ${starredCount === 0 ? 'disabled' : ''}>
+          ★苦手のみ（${starredCount}問）
+        </label>
+        <label>
+          <input type="checkbox" id="sessionWrong" ${wrongCount === 0 ? 'disabled' : ''}>
+          間違いが多い問題のみ（${wrongCount}問）
+        </label>
+        <button class="session-start" onclick="startSession()">演習スタート（${pool.length}問から出題）</button>
+      </div>
+    `;
+  }
+
+  const ses = state.session;
+  // 終了画面
+  if (ses.idx >= ses.ids.length) {
+    const pct = Math.round((ses.score / ses.ids.length) * 100);
+    return `
+      <div class="session-result">
+        <div>演習終了！</div>
+        <div class="session-score">${ses.score} / ${ses.ids.length}</div>
+        <div class="session-rate">正答率 ${pct}%</div>
+      </div>
+      <div class="quiz-actions">
+        <button onclick="endSession()">設定に戻る</button>
+        <button class="primary" onclick="restartSession()">もう一度</button>
+      </div>
+    `;
+  }
+
+  const qid = ses.ids[ses.idx];
+  const q = state.questions.find(x => x.id === qid);
+  if (!q) return `<div class="empty">問題が見つかりません</div>`;
+
+  const pct = Math.round((ses.idx / ses.ids.length) * 100);
+  const correct = ses.answered && ses.lastChoice === q.a;
+
+  return `
+    <div class="quiz-area">
+      <div class="quiz-progress">
+        <span>${ses.idx + 1} / ${ses.ids.length}問</span>
+        <span>正解 ${ses.score}</span>
+      </div>
+      <div class="quiz-bar"><div class="quiz-fill" style="width: ${pct}%"></div></div>
+      <div class="quiz-card">
+        <button class="star-quiz ${q.starred ? 'starred' : ''}" onclick="toggleStarInQuiz()">${q.starred ? '★' : '☆'}</button>
+        <div class="quiz-meta">
+          <span class="quiz-tag subject">${escapeHtml(q.s)}</span>
+          ${q.t ? `<span class="quiz-tag topic">${escapeHtml(q.t)}</span>` : ''}
+        </div>
+        <div class="quiz-question">${escapeHtml(q.q)}</div>
+        <div class="quiz-buttons">
+          <button class="ox-btn maru ${ses.answered ? 'disabled' : ''} ${ses.lastChoice === '○' ? (correct ? 'selected correct' : 'selected wrong') : ''}" onclick="answerQuestion('○')">○</button>
+          <button class="ox-btn batsu ${ses.answered ? 'disabled' : ''} ${ses.lastChoice === '×' ? (correct ? 'selected correct' : 'selected wrong') : ''}" onclick="answerQuestion('×')">×</button>
+        </div>
+        ${ses.answered ? `
+          <div class="answer-box ${correct ? 'correct' : 'wrong'}">
+            <div class="answer-result ${correct ? 'correct' : 'wrong'}">
+              <span class="answer-correct-mark">${correct ? '✓' : '✗'}</span>
+              ${correct ? '正解' : '不正解'} — 正答：${q.a}
+            </div>
+            <div class="answer-explain">${escapeHtml(q.ex || '解説なし')}</div>
+          </div>
+        ` : ''}
+      </div>
+      ${ses.answered ? `
+        <div class="quiz-actions">
+          <button onclick="endSession()">中断</button>
+          <button class="primary" onclick="nextQuestion()">${ses.idx + 1 >= ses.ids.length ? '結果を見る' : '次の問題 →'}</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function restartSession() {
+  state.session = null;
+  saveState();
+  render();
+}
+
+// ============================================================
+// 一覧モード
+// ============================================================
+let editingQId = null;
+
+function openModal(qid) {
+  editingQId = qid || null;
+  if (qid) {
+    const q = state.questions.find(x => x.id === qid);
+    if (q) {
+      document.getElementById("modalTitle").textContent = "問題を編集";
+      document.getElementById("qSubject").value = q.s;
+      document.getElementById("qTopic").value = q.t || "";
+      document.getElementById("qQuestion").value = q.q;
+      document.querySelectorAll('input[name="qAnswer"]').forEach(r => {
+        r.checked = (r.value === q.a);
+      });
+      document.getElementById("qExplain").value = q.ex || "";
+    }
+  } else {
+    document.getElementById("modalTitle").textContent = "問題を追加";
+    document.getElementById("qSubject").value = state.filter !== "all" && state.filter !== "★" ? state.filter : "労基";
+    document.getElementById("qTopic").value = "";
+    document.getElementById("qQuestion").value = "";
+    document.querySelector('input[name="qAnswer"][value="○"]').checked = true;
+    document.getElementById("qExplain").value = "";
+  }
+  document.getElementById("modalBg").classList.add("active");
+}
+
+function closeModal() {
+  document.getElementById("modalBg").classList.remove("active");
+  editingQId = null;
+}
+
+function saveQuestion() {
+  const s = document.getElementById("qSubject").value;
+  const t = document.getElementById("qTopic").value.trim();
+  const qText = document.getElementById("qQuestion").value.trim();
+  const a = document.querySelector('input[name="qAnswer"]:checked').value;
+  const ex = document.getElementById("qExplain").value.trim();
+
+  if (!qText) {
+    alert("問題文を入力してください");
+    return;
+  }
+
+  if (editingQId) {
+    const q = state.questions.find(x => x.id === editingQId);
+    if (q) {
+      q.s = s; q.t = t; q.q = qText; q.a = a; q.ex = ex;
+    }
+  } else {
+    state.questions.push({
+      id: "q_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      s, t, q: qText, a, ex,
+      starred: false,
+      correctCount: 0,
+      wrongCount: 0
+    });
+  }
+  saveState();
+  closeModal();
+  render();
+}
+
+function editQuestion(id) { openModal(id); }
+
+function deleteQuestion(id) {
+  if (!confirm("この問題を削除しますか？")) return;
+  state.questions = state.questions.filter(q => q.id !== id);
+  saveState();
+  render();
+}
+
+function toggleStarInList(id) {
+  const q = state.questions.find(x => x.id === id);
+  if (q) {
+    q.starred = !q.starred;
+    saveState();
+    render();
+  }
+}
+
+function renderList() {
+  const items = questionsForFilter(state.filter);
+
+  let html = `
+    <div class="list-controls">
+      <button class="primary" onclick="openModal()">＋ 問題を追加</button>
+    </div>
+  `;
+
+  if (state.questions.length > 0) {
+    html += `
+      <div class="export-bar">
+        <button onclick="exportQuestions()">📤 エクスポート</button>
+        <button onclick="importQuestions()">📥 インポート</button>
+      </div>
+    `;
+  }
+
+  if (items.length === 0) {
+    html += `
+      <div class="empty">
+        ${state.filter === "all" ? "問題がまだありません" : "この条件の問題はありません"}
+        <div class="empty-help">「＋ 問題を追加」から追加できます</div>
+      </div>
+    `;
+    return html;
+  }
+
+  html += items.map(q => `
+    <div class="list-item ${q.starred ? 'starred' : ''}">
+      <div class="list-item-meta">
+        <span class="ans-mark ${q.a === '○' ? 'maru' : 'batsu'}">${q.a}</span>
+        <span class="quiz-tag subject">${escapeHtml(q.s)}</span>
+        ${q.t ? `<span class="quiz-tag topic">${escapeHtml(q.t)}</span>` : ''}
+        ${q.starred ? '<span class="quiz-tag" style="color: #EF9F27;">★苦手</span>' : ''}
+        ${q.correctCount || q.wrongCount ? `<span class="quiz-tag">✓${q.correctCount || 0} ✗${q.wrongCount || 0}</span>` : ''}
+      </div>
+      <div class="list-item-question">${escapeHtml(q.q)}</div>
+      ${q.ex ? `<div class="list-item-explain">${escapeHtml(q.ex)}</div>` : ''}
+      <div class="list-item-actions">
+        <button onclick="toggleStarInList('${q.id}')">${q.starred ? '★解除' : '☆苦手'}</button>
+        <button onclick="editQuestion('${q.id}')">編集</button>
+        <button class="danger" onclick="deleteQuestion('${q.id}')">削除</button>
+      </div>
+    </div>
+  `).join("");
+
+  return html;
+}
+
+// ============================================================
+// エクスポート/インポート
+// ============================================================
+function exportQuestions() {
+  const data = JSON.stringify(state.questions, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `sharoushi_oxquiz_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importQuestions() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,application/json";
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error("不正な形式");
+        if (!confirm(`${data.length}問をインポートします（既存問題は保持）。よろしいですか？`)) return;
+        const existingIds = new Set(state.questions.map(q => q.id));
+        const newQs = data.filter(q => !existingIds.has(q.id));
+        state.questions.push(...newQs);
+        saveState();
+        render();
+        alert(`${newQs.length}問をインポートしました`);
+      } catch (err) {
+        alert("インポートに失敗しました：" + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ============================================================
+// レンダリング
+// ============================================================
+function render() {
+  // モードタブ
+  document.querySelectorAll(".mode-tab").forEach(b => b.classList.remove("active"));
+  document.getElementById("mode" + state.mode[0].toUpperCase() + state.mode.slice(1)).classList.add("active");
+
+  // フィルターチップ
+  const counts = {};
+  state.questions.forEach(q => { counts[q.s] = (counts[q.s] || 0) + 1; });
+  counts["all"] = state.questions.length;
+  counts["★"] = state.questions.filter(q => q.starred).length;
+  const labels = { "all": "全部", "★": "★苦手" };
+  const fb = document.getElementById("filterBar");
+  fb.innerHTML = FILTERS.map(s => `
+    <button class="filter-chip ${state.filter === s ? 'active' : ''}" onclick="setFilter('${s}')">
+      ${labels[s] || s}<span class="count">${counts[s] || 0}</span>
+    </button>
+  `).join("");
+
+  // 統計
+  const total = state.questions.length;
+  const starred = state.questions.filter(q => q.starred).length;
+  document.getElementById("stats").textContent = `全${total}問 ★${starred}`;
+
+  // メイン
+  const main = document.getElementById("main");
+  main.innerHTML = state.mode === "quiz" ? renderQuiz() : renderList();
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+document.getElementById("modalBg").addEventListener("click", (e) => {
+  if (e.target.id === "modalBg") closeModal();
+});
+
+render();
+</script>
+
+</body>
+</html>
