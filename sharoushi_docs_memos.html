@@ -827,6 +827,420 @@ const DOCS = [
       </ul>
       <div class="doc-note">60歳台前半・後半いずれも支給停止調整額は50万円で一本化（令和4年4月〜）。</div>
     `
+  },
+  {
+    s: "健保",
+    title: "健保 被保険者の適用要件（詳細）",
+    body: `
+      <div class="doc-section-title">適用事業所の種類</div>
+      <table class="doc-table">
+        <thead><tr><th>区分</th><th>要件</th></tr></thead>
+        <tbody>
+          <tr><td>強制適用（法人）</td><td>従業員数問わず（1人でも適用）</td></tr>
+          <tr><td>強制適用（個人）</td><td>常時5人以上＋法定16業種</td></tr>
+          <tr><td>任意適用（個人）</td><td>5人未満 or 法定16業種以外。被保険者となるべき者の1/2以上の同意＋厚労大臣の認可</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-section-title">被保険者の主な要件</div>
+      <ul class="doc-list">
+        <li><strong>原則</strong>：適用事業所に使用される者（フルタイム）</li>
+        <li><strong>パート等の4分の3基準</strong>：1週の所定労働時間及び1月の所定労働日数が、通常の労働者の4分の3以上</li>
+        <li><strong>特定適用事業所の短時間労働者</strong>（4分の3未満でも被保険者）：①週20時間以上 ②月額賃金8.8万円以上 ③2か月超の雇用見込み ④学生でない</li>
+      </ul>
+      <div class="doc-section-title">特定適用事業所の規模拡大の経緯</div>
+      <table class="doc-table">
+        <thead><tr><th>時期</th><th>従業員数</th></tr></thead>
+        <tbody>
+          <tr><td>平成28年10月〜</td><td>501人以上</td></tr>
+          <tr><td>令和4年10月〜</td><td>101人以上</td></tr>
+          <tr><td>令和6年10月〜</td><td>51人以上（現行）</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">「従業員数」は被保険者の総数で判定。事業主単位（同一法人）でカウント。</div>
+      <div class="doc-section-title">適用除外（被保険者となれない者）</div>
+      <ul class="doc-list">
+        <li>船員保険の被保険者（疾病任意継続を除く）</li>
+        <li>臨時に使用される者：日雇／2か月以内の期間を定めて使用</li>
+        <li>季節的業務（4か月以内）／臨時的事業（6か月以内）</li>
+        <li>所在地が一定しない事業所に使用される者</li>
+        <li>後期高齢者医療の被保険者（75歳以上等）</li>
+      </ul>
+    `
+  },
+  {
+    s: "健保",
+    title: "任意継続被保険者（完全ガイド）",
+    body: `
+      <div class="doc-section-title">資格取得要件</div>
+      <ul class="doc-list">
+        <li><strong>①継続2か月以上</strong>の被保険者期間（資格喪失日の前日まで）</li>
+        <li><strong>②20日以内</strong>に保険者へ申出（資格喪失日から起算）</li>
+        <li>※任意適用取消で資格喪失した場合は対象外</li>
+      </ul>
+      <div class="doc-section-title">資格喪失事由（重要：5パターン）</div>
+      <table class="doc-table">
+        <thead><tr><th>事由</th><th>喪失日</th></tr></thead>
+        <tbody>
+          <tr><td>①任意継続2年経過</td><td>翌日</td></tr>
+          <tr><td>②死亡</td><td>翌日</td></tr>
+          <tr><td>③保険料未納（納付期日まで）</td><td>翌日</td></tr>
+          <tr><td>④被保険者資格取得（再就職）</td><td>当日</td></tr>
+          <tr><td>⑤後期高齢者医療被保険者となった</td><td>当日</td></tr>
+          <tr><td>⑥任意脱退の申出（令和4.1〜）</td><td>申出受理日の属する月の末日が到来したとき翌日</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-section-title">標準報酬月額の決定方法</div>
+      <p>以下のうち<strong>いずれか低い方</strong>：</p>
+      <ul class="doc-list">
+        <li>①資格喪失時の本人の標準報酬月額</li>
+        <li>②前年（1月〜3月の取得は前々年）9月30日における全被保険者の平均標準報酬月額（協会けんぽ：30万円）</li>
+      </ul>
+      <div class="doc-note">健保組合は規約で②を超える額にすることもできる（令和4.1改正）。</div>
+      <div class="doc-section-title">保険料</div>
+      <ul class="doc-list">
+        <li>全額自己負担（事業主負担分も含む）</li>
+        <li>納付期日：その月の<strong>10日</strong>まで</li>
+        <li>初回は資格取得日から起算して20日以内</li>
+        <li>前納可能（4月〜9月／10月〜翌年3月）：割引あり</li>
+      </ul>
+    `
+  },
+  {
+    s: "健保",
+    title: "標準報酬月額の決定・改定（4種類）",
+    body: `
+      <div class="doc-section-title">①資格取得時決定</div>
+      <p>新規加入時。報酬月額に応じて決定。<strong>1月〜5月の取得</strong>はその年の8月まで、<strong>6月〜12月の取得</strong>は翌年8月まで適用。</p>
+
+      <div class="doc-section-title">②定時決定（算定基礎届）</div>
+      <table class="doc-table">
+        <thead><tr><th>項目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>対象者</td><td>7月1日現在の全被保険者</td></tr>
+          <tr><td>対象月</td><td>4月・5月・6月の3か月（17日以上の月のみ平均）</td></tr>
+          <tr><td>届出期限</td><td>7月1日〜7月10日</td></tr>
+          <tr><td>適用期間</td><td>その年の9月〜翌年8月</td></tr>
+          <tr><td>除外</td><td>6月1日以降の資格取得者／7月〜9月の随時改定対象者</td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-section-title">③随時改定（月額変更届）</div>
+      <p>以下の<strong>3要件すべて</strong>を満たす場合：</p>
+      <ul class="doc-list">
+        <li>固定的賃金（基本給・諸手当）の変動</li>
+        <li>変動月から<strong>3か月間の平均報酬月額</strong>と従前の標準報酬月額に<strong>2等級以上</strong>の差</li>
+        <li>3か月とも<strong>支払基礎日数17日以上</strong></li>
+      </ul>
+      <p>適用：変動月から<strong>4か月目</strong>から（〜その年8月 or 翌年8月）</p>
+
+      <div class="doc-section-title">④産前産後休業終了時改定／育児休業等終了時改定</div>
+      <ul class="doc-list">
+        <li>休業終了後、固定賃金変動と関係なく改定可（被保険者からの申出）</li>
+        <li>3か月のうち1月でも17日以上あれば算定可</li>
+        <li>1等級差で改定可（随時改定の2等級と異なる）</li>
+        <li>適用は休業終了後3か月経過した翌月から</li>
+      </ul>
+      <div class="doc-note">2等級差ルールの例外：標準報酬月額の上限・下限到達時など、改正によって2等級差未満でも改定される場合がある。</div>
+    `
+  },
+  {
+    s: "健保",
+    title: "傷病手当金（計算式と通算ルール）",
+    body: `
+      <div class="doc-section-title">支給要件（4要件）</div>
+      <ul class="doc-list">
+        <li>①業務外の事由による疾病・負傷</li>
+        <li>②療養のため労務に服することができない</li>
+        <li>③連続する3日間の<strong>待期期間</strong>を満たす</li>
+        <li>④報酬を受けない（受けていても所定額未満）</li>
+      </ul>
+
+      <div class="doc-section-title">日額の計算式</div>
+      <div class="doc-formula">
+        <strong>傷病手当金日額</strong><br>
+        ＝ 支給開始日以前の継続した12か月間の各標準報酬月額の平均額 ÷ 30 × 2/3
+      </div>
+      <div class="doc-section-title">12か月未満の場合（重要）</div>
+      <p>以下のうち<strong>いずれか低い額</strong>を基準とする：</p>
+      <ul class="doc-list">
+        <li>①支給開始日以前の継続した期間の各標準報酬月額の平均額</li>
+        <li>②前年度9月30日の<strong>全被保険者の平均標準報酬月額</strong>（協会けんぽ：30万円）</li>
+      </ul>
+
+      <div class="doc-section-title">支給期間（令和4.1改正で「通算」化）</div>
+      <table class="doc-table">
+        <thead><tr><th>時期</th><th>支給期間</th></tr></thead>
+        <tbody>
+          <tr><td>令和3.12.31以前</td><td>支給開始日から起算して暦日で1年6か月</td></tr>
+          <tr><td>令和4.1.1以降</td><td>支給を受けた日数の<strong>通算で1年6か月</strong>（実支給日数549日）</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">通算化により、途中で出勤して支給停止された期間は支給期間にカウントされない。長期治療を要する慢性疾患に有利。</div>
+
+      <div class="doc-section-title">他の給付との調整</div>
+      <ul class="doc-list">
+        <li><strong>報酬</strong>受給中：報酬額が傷病手当金額未満なら差額支給</li>
+        <li><strong>出産手当金</strong>（同期間）：出産手当金優先、差額支給</li>
+        <li><strong>障害厚生年金</strong>（同一傷病）：年金日額相当額が傷病手当金額未満なら差額支給</li>
+        <li><strong>障害手当金</strong>：受給後、合計額が障害手当金額に達するまで不支給</li>
+        <li><strong>労災休業補償給付</strong>：労災優先（業務外傷病でも別の業務上傷病で労災受給中なら不支給）</li>
+      </ul>
+    `
+  },
+  {
+    s: "健保",
+    title: "出産関係給付（一時金・手当金）",
+    body: `
+      <div class="doc-section-title">出産育児一時金</div>
+      <table class="doc-table">
+        <thead><tr><th>項目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>支給額</td><td><strong>50万円</strong>（令和5.4〜）／産科医療補償制度未加入機関は48.8万円</td></tr>
+          <tr><td>対象</td><td>妊娠4か月（85日）以上の出産（死産・流産・人工中絶も対象）</td></tr>
+          <tr><td>多胎</td><td>胎児の数に応じて支給（双子なら100万円）</td></tr>
+          <tr><td>受取方法</td><td>直接支払制度／受取代理制度／償還払い</td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-section-title">出産手当金</div>
+      <table class="doc-table">
+        <thead><tr><th>項目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>日額</td><td>傷病手当金と同じ計算式（標準報酬日額×2/3）</td></tr>
+          <tr><td>支給期間</td><td>出産日（出産予定日が早い場合は予定日）以前<strong>42日</strong>＋出産日後<strong>56日</strong></td></tr>
+          <tr><td>多胎</td><td>出産前<strong>98日</strong>（98＋56＝154日）</td></tr>
+          <tr><td>条件</td><td>その期間労務に服しなかった日</td></tr>
+          <tr><td>遅延出産</td><td>遅れた期間も含めて支給</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">出産日は産前42日（多胎98日）に含まれる。産前6週・産後8週の労基法65条と異なるので注意。</div>
+
+      <div class="doc-section-title">家族出産育児一時金</div>
+      <p>被扶養者の出産時、被保険者に支給。金額・要件は出産育児一時金と同じ。</p>
+
+      <div class="doc-section-title">資格喪失後の出産給付</div>
+      <ul class="doc-list">
+        <li><strong>出産育児一時金</strong>：被保険者期間継続1年以上＋資格喪失後6か月以内の出産で支給</li>
+        <li><strong>出産手当金</strong>：継続給付要件（資格喪失日前日まで継続1年以上＋資格喪失時に受給または受給要件充足）に該当する場合のみ</li>
+      </ul>
+    `
+  },
+  {
+    s: "健保",
+    title: "高額療養費（70歳未満・所得区分）",
+    body: `
+      <div class="doc-section-title">70歳未満の自己負担限度額（月額）</div>
+      <table class="doc-table">
+        <thead><tr><th>区分</th><th>標準報酬月額</th><th>限度額（円）</th><th>多数該当</th></tr></thead>
+        <tbody>
+          <tr><td>ア</td><td>83万円以上</td><td>252,600+（医-842,000）×1%</td><td>140,100</td></tr>
+          <tr><td>イ</td><td>53〜79万円</td><td>167,400+（医-558,000）×1%</td><td>93,000</td></tr>
+          <tr><td>ウ</td><td>28〜50万円</td><td>80,100+（医-267,000）×1%</td><td>44,400</td></tr>
+          <tr><td>エ</td><td>26万円以下</td><td>57,600</td><td>44,400</td></tr>
+          <tr><td>オ</td><td>低所得者（住民税非課税）</td><td>35,400</td><td>24,600</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">「医」＝総医療費（10割）。多数該当：直近12か月以内に3回以上該当した場合の4回目以降の限度額。</div>
+
+      <div class="doc-section-title">70歳以上の自己負担限度額（月額）</div>
+      <table class="doc-table">
+        <thead><tr><th>区分</th><th>標準報酬月額</th><th>外来（個人）</th><th>世帯（外来＋入院）</th></tr></thead>
+        <tbody>
+          <tr><td>現役並みⅢ</td><td>83万円以上</td><td colspan="2">252,600+（医-842,000）×1%／多数該当140,100</td></tr>
+          <tr><td>現役並みⅡ</td><td>53〜79万円</td><td colspan="2">167,400+（医-558,000）×1%／多数該当93,000</td></tr>
+          <tr><td>現役並みⅠ</td><td>28〜50万円</td><td colspan="2">80,100+（医-267,000）×1%／多数該当44,400</td></tr>
+          <tr><td>一般</td><td>26万円以下</td><td>18,000（年144,000）</td><td>57,600（多数該当44,400）</td></tr>
+          <tr><td>低所得Ⅱ</td><td>住民税非課税</td><td>8,000</td><td>24,600</td></tr>
+          <tr><td>低所得Ⅰ</td><td>所得なし等</td><td>8,000</td><td>15,000</td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-section-title">合算の仕組み</div>
+      <ul class="doc-list">
+        <li><strong>世帯合算</strong>：同一世帯（同一保険者）の自己負担を合算（21,000円以上の自己負担のみ対象、70歳未満の場合）</li>
+        <li><strong>70歳以上は1円から合算可</strong></li>
+        <li><strong>外来年間合算</strong>：70歳以上の一般・低所得者の外来限度額（月額18,000円）が年間144,000円を超えた場合に超過分を支給</li>
+      </ul>
+
+      <div class="doc-section-title">特定疾病（人工透析等）</div>
+      <p>長期高額疾病：自己負担限度額月<strong>10,000円</strong>（標準報酬月額53万円以上の70歳未満は<strong>20,000円</strong>）</p>
+    `
+  },
+  {
+    s: "健保",
+    title: "資格喪失後の給付（継続給付）",
+    body: `
+      <div class="doc-section-title">継続給付の要件（共通）</div>
+      <ul class="doc-list">
+        <li>資格喪失日の前日まで<strong>継続して1年以上</strong>の被保険者期間</li>
+        <li>※任意継続被保険者・特例退職被保険者・共済組合員期間も通算可（昭和25.3.9保文発677号等）</li>
+      </ul>
+
+      <div class="doc-section-title">①傷病手当金・出産手当金の継続給付</div>
+      <ul class="doc-list">
+        <li>資格喪失時に現に受けているか、受けることができる状態</li>
+        <li>残期間につき継続して支給される（傷病手当金は通算1年6か月、出産手当金は産前産後の残期間）</li>
+        <li>労務に服した場合は支給停止だが、再度労務不能になっても再開可</li>
+      </ul>
+      <div class="doc-note">「受けることができる状態」＝労務不能で報酬を受けず待期完成も含む（資格喪失日に労務に服している場合は不可）。</div>
+
+      <div class="doc-section-title">②出産育児一時金</div>
+      <ul class="doc-list">
+        <li>資格喪失日後<strong>6か月以内</strong>の出産</li>
+        <li>1年以上の被保険者期間が条件</li>
+      </ul>
+
+      <div class="doc-section-title">③埋葬料・埋葬費</div>
+      <ul class="doc-list">
+        <li>以下のいずれかに該当：
+          <ul>
+            <li>傷病手当金・出産手当金の継続給付を受けている者の死亡</li>
+            <li>その給付を受けなくなって3か月以内の死亡</li>
+            <li>資格喪失後3か月以内の死亡</li>
+          </ul>
+        </li>
+        <li>金額：5万円（生計維持者がいる場合は埋葬料、いない場合は実費の埋葬費＝5万円が上限）</li>
+      </ul>
+
+      <div class="doc-section-title">④船員保険被保険者となった場合</div>
+      <p>傷病手当金・出産手当金の継続給付の規定は<strong>適用されない</strong>（船員保険から給付を受けるため）。</p>
+    `
+  },
+  {
+    s: "健保",
+    title: "保険料の徴収・免除・前納",
+    body: `
+      <div class="doc-section-title">保険料の負担</div>
+      <table class="doc-table">
+        <thead><tr><th>区分</th><th>負担</th></tr></thead>
+        <tbody>
+          <tr><td>原則</td><td>労使折半（事業主が源泉控除して納付）</td></tr>
+          <tr><td>任意継続被保険者</td><td>全額本人負担</td></tr>
+          <tr><td>日雇特例被保険者</td><td>原則折半（事業主が印紙を貼付）</td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-section-title">保険料率（協会けんぽ・令和6年度）</div>
+      <ul class="doc-list">
+        <li>都道府県単位で異なる（9.35%〜10.42%）</li>
+        <li>介護保険料率：1.60%（40〜64歳の被保険者に加算）</li>
+        <li>健保組合は組合ごとに規約で定める</li>
+      </ul>
+
+      <div class="doc-section-title">産前産後休業・育児休業等の保険料免除</div>
+      <table class="doc-table">
+        <thead><tr><th>休業種別</th><th>免除期間</th><th>負担</th></tr></thead>
+        <tbody>
+          <tr><td>産前産後休業</td><td>休業開始月〜終了日翌日の前月</td><td>労使とも全額免除</td></tr>
+          <tr><td>育児休業（〜3歳）</td><td>休業開始月〜終了日翌日の前月</td><td>労使とも全額免除</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-section-title">育児休業等の月内同月開始終了の取扱い（令和4.10〜）</div>
+      <ul class="doc-list">
+        <li>同月内に開始・終了した休業（14日以上）は<strong>当月分免除</strong></li>
+        <li>賞与に係る保険料免除：<strong>1か月超</strong>の育児休業等が条件</li>
+      </ul>
+
+      <div class="doc-section-title">前納（任意継続被保険者）</div>
+      <ul class="doc-list">
+        <li>4月〜9月分／10月〜翌3月分／4月〜翌3月分のいずれかをまとめて納付</li>
+        <li>割引：年4分（複利現価法）相当の利息分を前納額から控除</li>
+        <li>前納に係る期間の各月初日に納付されたものとみなす</li>
+      </ul>
+
+      <div class="doc-section-title">繰上徴収（重要）</div>
+      <p>納期到来を待たずに保険料を全額徴収できる事由：</p>
+      <ul class="doc-list">
+        <li>納付義務者が国税・地方税の滞納処分を受ける</li>
+        <li>強制執行を受ける</li>
+        <li>破産手続開始決定を受ける</li>
+        <li>事業の廃止、解散、被相続人の死亡（一部）</li>
+      </ul>
+    `
+  },
+  {
+    s: "健保",
+    title: "第三者行為災害・損害賠償",
+    body: `
+      <div class="doc-section-title">基本構造</div>
+      <p>第三者の行為により生じた疾病・負傷について、被保険者が保険給付を受けたときは、保険者は、その給付の価額の限度において、被保険者が第三者に対して有する<strong>損害賠償請求権を取得</strong>する（求償）。</p>
+
+      <div class="doc-formula">
+        被保険者 ─ 第三者（加害者）<br>
+        　　│ 保険給付　　 ↑ 求償<br>
+        保険者 ────────────────┘
+      </div>
+
+      <div class="doc-section-title">第三者行為災害届</div>
+      <ul class="doc-list">
+        <li>提出義務者：<strong>被保険者</strong>（事業主ではない）</li>
+        <li>届書記載事項：第三者の氏名・住所、被害状況等</li>
+        <li>提出期限：遅滞なく</li>
+      </ul>
+
+      <div class="doc-section-title">免責の範囲</div>
+      <p>被保険者が第三者から損害賠償を受けたときは、保険者は、その額の限度において、保険給付を行う責めを免れる。つまり：</p>
+      <ul class="doc-list">
+        <li>先に賠償金を受け取った→保険給付の額を控除</li>
+        <li>先に保険給付を受けた→保険者が第三者に求償</li>
+      </ul>
+
+      <div class="doc-section-title">他法令との給付調整</div>
+      <table class="doc-table">
+        <thead><tr><th>事由</th><th>調整</th></tr></thead>
+        <tbody>
+          <tr><td>業務上災害（労災）</td><td>労災優先（健保からは給付なし）</td></tr>
+          <tr><td>他法令で国・地方の負担で給付</td><td>その限度で健保から給付なし</td></tr>
+          <tr><td>第三者行為</td><td>求償権の発生</td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-section-title">DV被害者の特例（令和5.3〜）</div>
+      <p>被保険者からDV等を受けた被扶養者については、加害者である被保険者を「第三者」と扱い、被害者が被扶養者から外れるまでの間、保険診療による受診が可能。</p>
+    `
+  },
+  {
+    s: "健保",
+    title: "不服申立て・時効・罰則",
+    body: `
+      <div class="doc-section-title">不服申立ての二審制</div>
+      <table class="doc-table">
+        <thead><tr><th>段階</th><th>機関</th><th>期限</th></tr></thead>
+        <tbody>
+          <tr><td>第一審：審査請求</td><td>社会保険審査官（地方厚生局）</td><td>処分を知った日翌日から3か月以内</td></tr>
+          <tr><td>第二審：再審査請求</td><td>社会保険審査会（厚生労働省）</td><td>決定書謄本送付日翌日から2か月以内</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">保険給付・標準報酬・被保険者資格の処分は審査官に審査請求。保険料その他徴収金の処分は社会保険審査会に直接審査請求。</div>
+
+      <div class="doc-section-title">審査請求と訴訟の関係</div>
+      <ul class="doc-list">
+        <li>処分取消の訴え：原則として審査請求の決定を経た後でなければ提起できない（審査請求前置）</li>
+        <li>例外：審査請求から3か月経過しても決定がない場合は決定を待たずに訴え提起可能</li>
+      </ul>
+
+      <div class="doc-section-title">時効（重要）</div>
+      <table class="doc-table">
+        <thead><tr><th>権利</th><th>時効</th></tr></thead>
+        <tbody>
+          <tr><td>保険料・徴収金等の徴収権</td><td>2年</td></tr>
+          <tr><td>保険料還付請求権</td><td>2年</td></tr>
+          <tr><td>保険給付を受ける権利</td><td>2年</td></tr>
+          <tr><td>第三者行為に対する求償権</td><td>3年（民法）</td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-section-title">主な罰則</div>
+      <table class="doc-table">
+        <thead><tr><th>違反</th><th>罰則</th></tr></thead>
+        <tbody>
+          <tr><td>事業主の届出懈怠（資格取得・喪失等）</td><td>6か月以下の懲役 or 50万円以下の罰金</td></tr>
+          <tr><td>偽りの届出・偽りの届出による給付受給</td><td>6か月以下の懲役 or 50万円以下の罰金</td></tr>
+          <tr><td>秘密漏洩（協会・健保組合役職員）</td><td>1年以下の懲役 or 100万円以下の罰金</td></tr>
+          <tr><td>被保険者の報告義務違反等</td><td>30万円以下の罰金</td></tr>
+        </tbody>
+      </table>
+    `
   }
 ];
 
